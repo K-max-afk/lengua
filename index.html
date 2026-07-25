@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>El Viaje del Lector Sabio</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+<canvas id="bg-canvas"></canvas>
+
+<div id="loading-screen">
+    <div class="load-logo">📚</div>
+    <h1>El Viaje del Lector Sabio</h1>
+    <div class="load-bar"><div class="load-fill" id="load-fill"></div></div>
+    <p id="load-text">Preparando tu aventura...</p>
+</div>
+
+<div id="music-player">
+    <button id="play-pause-btn" title="Reproducir/Pausar">
+        <i class="fas fa-play" id="play-icon"></i>
+    </button>
+    <div class="vol-ctrl">
+        <i class="fas fa-volume-low"></i>
+        <input type="range" id="vol-slider" min="0" max="100" value="40">
+        <i class="fas fa-volume-high"></i>
+    </div>
+    <span class="music-label">🎵 Música Ambiental</span>
+</div>
+
+<div id="slides-wrap">
+
+    <!-- SLIDE 1: TÍTULO -->
+    <div class="slide active" id="s1" data-bg="title">
+        <div class="cinematic-bar top"></div>
+        <div class="cinematic-bar bottom"></div>
+        <div class="slide-inner center-all">
+            <div class="title-character">
+                <div class="char-wrap">
+                    <div class="luna luna-hero">
+                        <div class="luna-hair"></div>
+                        <div class="luna-face">
+                            <div class="luna-eyes"><div class="l-eye"></div><div class="r-eye"></div></div>
+                            <div class="luna-smile"></div>
+                        </div>
+                        <div class="luna-body">
+                            <div class="luna-arm left"></div>
+                            <div class="luna-arm right"></div>
+                            <span class="luna-book-icon">📖</span>
+                        </div>
+                        <div class="luna-legs">
+                            <div class="luna-leg l"></div>
+                            <div class="luna-leg r"></div>
+                        </div>
+                    </div>
+                    <div class="orbit-items">
+                        <span class="orbit-item" style="--a:0deg">📚</span>
+                        <span class="orbit-item" style="--a:90deg">✨</span>
+                        <span class="orbit-item" style="--a:180deg">🔮</span>
+                        <span class="orbit-item" style="--a:270deg">⭐</span>
+                    </div>
+                </div>
+            </div>
+            <div class="title-text">
+                <div class="eyebrow-badge">✦ EXPERIENCIA CINEMATOGRÁFICA EDUCATIVA ✦</div>
+                <h1 class="hero-title">El Viaje del<br><span class="gradient-text">Lector Sabio</span></h1>
+                <p class="hero-sub">8 Estrategias para la Comprensión Lectora</p>
+                <div class="star-row">★ ★ ★ ★ ★</div>
+                <p class="author-note">Una aventura interactiva para el aula</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 2: LA HISTORIA COMIENZA -->
+    <div class="slide" id="s2" data-bg="story">
+        <div class="slide-inner">
+            <div class="scene-badge">ESCENA I · El Descubrimiento</div>
+            <div class="story-layout">
+                <div class="char-panel">
+                    <div class="luna luna-md surprised">
+                        <div class="luna-hair"></div>
+                        <div class="luna-face">
+                            <div class="luna-eyes wide"><div class="l-eye"></div><div class="r-eye"></div></div>
+                            <div class="luna-mouth-o"></div>
+                        </div>
+                        <div class="luna-body">
+                            <div class="luna-arm left reach"></div>
+                            <div class="luna-arm right"></div>
+                        </div>
+                        <div class="luna-legs"></div>
+                    </div>
+                </div>
+                <div class="narrative-panel">
+                    <div class="speech-box">
+                        <p>Era un martes ordinario cuando <strong>Luna</strong>, una estudiante de 12 años, encontró en la biblioteca un libro diferente. Su portada brillaba con luz dorada y las letras cambiaban de forma, como si estuvieran vivas...</p>
+                    </div>
+                    <div class="magic-book-wrap">
+                        <div class="magic-book">
+                            <span class="mb-icon">📖</span>
+                            <div class="mb-glow"></div>
+                            <div class="mb-sparks">
+                                <span style="--ang:20deg">✨</span>
+                                <span style="--ang:100deg">⭐</span>
+                                <span style="--ang:200deg">💫</span>
+                                <span style="--ang:300deg">🌟</span>
+                            </div>
+                        </div>
+                        <p class="book-whisper">"Quien me lea aprenderá a leer el mundo…"</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 3: PREGUNTA 1 (sala) -->
+    <div class="slide" id="s3" data-bg="question">
+        <div class="slide-inner center-all">
+            <div class="scene-badge">💬 PREGUNTA PARA LA SALA</div>
+            <div class="q-center">
+                <div class="q-deco">🤔</div>
+                <h2 class="q-title">Antes de leer un texto…</h2>
+                <h3 class="q-text">¿Qué haces para prepararte para la lectura?</h3>
+                <div class="options-grid">
+                    <div class="opt-card" onclick="pickOption(this)"><span>👀</span><p>Observo las imágenes y el título</p></div>
+                    <div class="opt-card" onclick="pickOption(this)"><span>💭</span><p>Pienso en lo que ya sé del tema</p></div>
+                    <div class="opt-card" onclick="pickOption(this)"><span>📖</span><p>Empiezo a leer directamente</p></div>
+                    <div class="opt-card" onclick="pickOption(this)"><span>🎯</span><p>Me hago preguntas sobre el tema</p></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 4: ESTRATEGIA 1 – CONOCIMIENTOS PREVIOS -->
+    <div class="slide" id="s4" data-bg="strat1">
+        <div class="slide-inner">
+            <div class="scene-badge">ESTRATEGIA 1 de 8</div>
+            <div class="strat-layout">
+                <div class="strat-visual">
+                    <div class="brain-wrap">
+                        <div class="brain-core">🧠</div>
+                        <div class="brain-nodes">
+                            <span class="bnode" style="--ang:0deg;--d:0s">📚 Lectura</span>
+                            <span class="bnode" style="--ang:60deg;--d:.15s">🏫 Escuela</span>
+                            <span class="bnode" style="--ang:120deg;--d:.3s">👨‍👩‍👧 Familia</span>
+                            <span class="bnode" style="--ang:180deg;--d:.45s">🌍 Mundo</span>
+                            <span class="bnode" style="--ang:240deg;--d:.6s">💡 Ideas</span>
+                            <span class="bnode" style="--ang:300deg;--d:.75s">❤️ Sentir</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="strat-info">
+                    <h2 class="strat-title">🧠 Activar Conocimientos Previos</h2>
+                    <p class="strat-desc">Antes de leer, tu cerebro ya tiene información valiosa. ¡Úsala para comprender mejor!</p>
+                    <div class="steps-list">
+                        <div class="step-item"><span class="sn">1</span><p>Observa el título, imágenes y subtítulos</p></div>
+                        <div class="step-item"><span class="sn">2</span><p>Pregúntate: ¿Qué sé sobre este tema?</p></div>
+                        <div class="step-item"><span class="sn">3</span><p>Relaciona con experiencias personales</p></div>
+                        <div class="step-item"><span class="sn">4</span><p>Activa recuerdos y conocimientos similares</p></div>
+                    </div>
+                    <div class="luna-tip-box">
+                        <span class="ltip-char">👧</span>
+                        <p>Luna usó esta estrategia para entender el mapa del libro mágico. ¡Ya sabía sobre mapas y puntos cardinales!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 5: ESTRATEGIA 2 – PREDICCIONES -->
+    <div class="slide" id="s5" data-bg="strat2">
+        <div class="slide-inner">
+            <div class="scene-badge">ESTRATEGIA 2 de 8</div>
+            <div class="strat-layout reverse">
+                <div class="strat-info">
+                    <h2 class="strat-title">🔮 Hacer Predicciones</h2>
+                    <p class="strat-desc">¡Tu mente es una máquina de predicciones! Imagina qué sucederá antes de que pase.</p>
+                    <div class="predict-game">
+                        <div class="clue-box">
+                            <span style="font-size:2rem">☁️</span>
+                            <p><em>"El cielo se oscureció de repente. Luna escuchó un trueno a lo lejos…"</em></p>
+                        </div>
+                        <p class="predict-q">🔮 ¿Qué crees que pasará?</p>
+                        <div class="predict-opts">
+                            <button class="pred-btn" onclick="predictAnswer(this,true)">🌧️ Comenzará a llover</button>
+                            <button class="pred-btn" onclick="predictAnswer(this,false)">🌈 Saldrá el sol</button>
+                            <button class="pred-btn" onclick="predictAnswer(this,true)">⚡ Habrá tormenta</button>
+                            <button class="pred-btn" onclick="predictAnswer(this,false)">🌻 Nada va a pasar</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="strat-visual">
+                    <div class="crystal-wrap">
+                        <div class="crystal-ball-el">🔮</div>
+                        <div class="crystal-glow"></div>
+                        <div class="formula-box">
+                            <div class="f-item">Pistas<br>del texto</div>
+                            <div class="f-plus">+</div>
+                            <div class="f-item">Lo que<br>ya sé</div>
+                            <div class="f-eq">=</div>
+                            <div class="f-result">🎯 Predicción</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 6: PREGUNTA 2 (sala) -->
+    <div class="slide" id="s6" data-bg="question2">
+        <div class="slide-inner center-all">
+            <div class="scene-badge">💬 REFLEXIÓN PARA LA SALA</div>
+            <div class="q-center">
+                <div class="q-deco">🔮</div>
+                <h2 class="q-title">La Profetisa del Libro Mágico</h2>
+                <div class="story-moment">
+                    <p>Luna entró a la sala de las predicciones. En la pared estaba escrito:</p>
+                    <blockquote>"El dragón vio el libro y sus ojos brillaron con un fuego diferente. No era el fuego de la ira, sino el del deseo…"</blockquote>
+                </div>
+                <h3 class="q-text">¿Qué crees que quiere el dragón hacer con el libro? ¿Por qué?</h3>
+                <div class="timer-zone">
+                    <p>💬 Comenten en grupo y compartan sus predicciones</p>
+                    <button class="timer-btn" onclick="startTimer(60)">⏱️ Dar 1 minuto para pensar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 7: ESTRATEGIA 3 – VISUALIZACIÓN -->
+    <div class="slide" id="s7" data-bg="strat3">
+        <div class="slide-inner">
+            <div class="scene-badge">ESTRATEGIA 3 de 8</div>
+            <div class="strat-layout">
+                <div class="strat-visual">
+                    <div class="eye-vis">
+                        <div class="big-eye-wrap">
+                            <div class="big-eye-pupil"></div>
+                            <div class="big-eye-shine"></div>
+                        </div>
+                        <div class="vis-floats">
+                            <span style="--vd:0s">🏰</span>
+                            <span style="--vd:.4s">🌊</span>
+                            <span style="--vd:.8s">🦋</span>
+                            <span style="--vd:1.2s">⛰️</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="strat-info">
+                    <h2 class="strat-title">👁️ Visualización</h2>
+                    <p class="strat-desc">Mientras lees, crea imágenes mentales. ¡Tu mente es el mejor cine del mundo!</p>
+                    <div class="steps-list">
+                        <div class="step-item"><span class="sn">1</span><p>Lee el texto con calma y atención</p></div>
+                        <div class="step-item"><span class="sn">2</span><p>Cierra los ojos e imagina la escena</p></div>
+                        <div class="step-item"><span class="sn">3</span><p>¿Qué colores, sonidos y olores hay?</p></div>
+                        <div class="step-item"><span class="sn">4</span><p>Dibuja o describe lo que visualizas</p></div>
+                    </div>
+                    <div class="practice-box">
+                        <h4>🎬 Practica ahora:</h4>
+                        <p><em>"La biblioteca mágica tenía paredes de cristal que reflejaban mil colores. Los libros flotaban en el aire, sus páginas susurrando secretos antiguos…"</em></p>
+                        <p class="vis-cta">👁️ Cierra los ojos 30 segundos y visualiza esta escena</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 8: ESTRATEGIA 4 – CONEXIONES -->
+    <div class="slide" id="s8" data-bg="strat4">
+        <div class="slide-inner">
+            <div class="scene-badge">ESTRATEGIA 4 de 8</div>
+            <div class="strat-layout reverse">
+                <div class="strat-info">
+                    <h2 class="strat-title">🔗 Hacer Conexiones</h2>
+                    <p class="strat-desc">Los buenos lectores conectan el texto con su vida, otros textos y el mundo real.</p>
+                    <div class="conn-map">
+                        <div class="conn-center">📖 Texto</div>
+                        <div class="conn-branch"><span>🧑‍🤝‍🧑</span><div><strong>Texto → Yo</strong><p>¿Esto me ha pasado a mí?</p></div></div>
+                        <div class="conn-branch"><span>📚</span><div><strong>Texto → Texto</strong><p>¿Se parece a otro libro?</p></div></div>
+                        <div class="conn-branch"><span>🌍</span><div><strong>Texto → Mundo</strong><p>¿Pasa en la realidad?</p></div></div>
+                    </div>
+                </div>
+                <div class="strat-visual">
+                    <div class="web-vis">
+                        <div class="web-center-node">📖</div>
+                        <div class="web-nodes">
+                            <span class="wnode" style="--wi:0">YO</span>
+                            <span class="wnode" style="--wi:1">TEXTOS</span>
+                            <span class="wnode" style="--wi:2">MUNDO</span>
+                        </div>
+                        <svg class="web-lines" viewBox="0 0 200 200">
+                            <line x1="100" y1="100" x2="100" y2="20" stroke="rgba(245,158,11,.4)" stroke-width="2" stroke-dasharray="5"/>
+                            <line x1="100" y1="100" x2="25" y2="165" stroke="rgba(245,158,11,.4)" stroke-width="2" stroke-dasharray="5"/>
+                            <line x1="100" y1="100" x2="175" y2="165" stroke="rgba(245,158,11,.4)" stroke-width="2" stroke-dasharray="5"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 9: ACTIVIDAD CONEXIONES (sala) -->
+    <div class="slide" id="s9" data-bg="activity">
+        <div class="slide-inner center-all">
+            <div class="scene-badge">🎮 ACTIVIDAD INTERACTIVA</div>
+            <div class="q-center">
+                <div class="q-deco">🔗</div>
+                <h2 class="q-title">¡Hagamos Conexiones!</h2>
+                <div class="act-layout">
+                    <div class="text-frag">
+                        <h4>Lee este fragmento:</h4>
+                        <blockquote>"Luna cruzó el puente de cristal con miedo. Abajo, el abismo parecía no tener fondo. Pero recordó las palabras de su abuela: 'El valor no es no tener miedo, es seguir adelante a pesar del miedo'."</blockquote>
+                    </div>
+                    <div class="conn-activity">
+                        <div class="ca-item" onclick="selectConn(this)"><span>🧑</span><p>¿Te ha pasado algo parecido?</p></div>
+                        <div class="ca-item" onclick="selectConn(this)"><span>📚</span><p>¿Conoces otro personaje valiente?</p></div>
+                        <div class="ca-item" onclick="selectConn(this)"><span>🌍</span><p>¿Existe algo así en el mundo real?</p></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 10: ESTRATEGIA 5 – PREGUNTAS -->
+    <div class="slide" id="s10" data-bg="strat5">
+        <div class="slide-inner">
+            <div class="scene-badge">ESTRATEGIA 5 de 8</div>
+            <div class="strat-layout">
+                <div class="strat-visual">
+                    <div class="tower-vis">
+                        <div class="tower-lv" style="--ti:5;--tw:220px">¿Cuándo? / ¿Dónde?</div>
+                        <div class="tower-lv" style="--ti:4;--tw:190px">¿Cómo?</div>
+                        <div class="tower-lv" style="--ti:3;--tw:160px">¿Por qué?</div>
+                        <div class="tower-lv" style="--ti:2;--tw:130px">¿Quién?</div>
+                        <div class="tower-top">❓ ¿Qué?</div>
+                    </div>
+                </div>
+                <div class="strat-info">
+                    <h2 class="strat-title">❓ Hacer Preguntas</h2>
+                    <p class="strat-desc">Los lectores activos se hacen preguntas antes, durante y después de leer.</p>
+                    <div class="q-categories">
+                        <div class="qcat before"><h4>⬅️ Antes</h4><ul><li>¿De qué trata?</li><li>¿Qué sé del tema?</li></ul></div>
+                        <div class="qcat during"><h4>📖 Durante</h4><ul><li>¿Qué significa esto?</li><li>¿Qué pasará después?</li></ul></div>
+                        <div class="qcat after"><h4>➡️ Después</h4><ul><li>¿Qué aprendí?</li><li>¿Qué dudas tengo?</li></ul></div>
+                    </div>
+                    <div class="luna-tip-box">
+                        <span class="ltip-char">👧</span>
+                        <p>"En la Torre de las Preguntas, Luna encontró cientos de puertas. Cada pregunta que hacía abría una nueva…"</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 11: ESTRATEGIA 6 – INFERENCIAS -->
+    <div class="slide" id="s11" data-bg="strat6">
+        <div class="slide-inner">
+            <div class="scene-badge">ESTRATEGIA 6 de 8</div>
+            <div class="strat-layout detective-scene">
+                <div class="detective-char-wrap">
+                    <span class="det-icon">🕵️</span>
+                    <span class="det-magnifier">🔍</span>
+                </div>
+                <div class="strat-info">
+                    <h2 class="strat-title">🕵️ Hacer Inferencias</h2>
+                    <p class="strat-desc">Como un detective, lee entre líneas. ¡El autor no dice todo directamente!</p>
+                    <div class="infer-example">
+                        <div class="ie-text">
+                            <h4>El texto dice:</h4>
+                            <blockquote>"Marina entró a la cocina. Olía a quemado. Su madre tenía las manos manchadas de negro y miraba fijamente el horno."</blockquote>
+                        </div>
+                        <div class="ie-arrow">🔍→</div>
+                        <div class="ie-result">
+                            <h4>Inferencia:</h4>
+                            <p>Aunque el texto no lo dice, deducimos que <strong>la madre quemó la comida</strong></p>
+                        </div>
+                    </div>
+                    <div class="infer-formula">
+                        <span>Pistas del texto</span><span class="if-plus">+</span><span>Conocimiento previo</span><span class="if-eq">=</span><span class="if-res">Inferencia ✓</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 12: ESTRATEGIA 7 – IDEA PRINCIPAL -->
+    <div class="slide" id="s12" data-bg="strat7">
+        <div class="slide-inner">
+            <div class="scene-badge">ESTRATEGIA 7 de 8</div>
+            <div class="strat-layout reverse">
+                <div class="strat-info">
+                    <h2 class="strat-title">🏔️ Idea Principal</h2>
+                    <p class="strat-desc">En cada texto hay una idea más importante que todo lo demás. ¡Encuéntrala!</p>
+                    <div class="mountain-diag">
+                        <div class="mt-peak">🏔️ Idea Principal</div>
+                        <div class="mt-base">
+                            <span>💬 Detalle 1</span>
+                            <span>💬 Detalle 2</span>
+                            <span>💬 Detalle 3</span>
+                            <span>💬 Ejemplo</span>
+                        </div>
+                    </div>
+                    <div class="tips-row">
+                        <div class="tip-pill">🔎 Busca la oración que resume todo</div>
+                        <div class="tip-pill">🗑️ Elimina los detalles y ejemplos</div>
+                        <div class="tip-pill">❓ ¿De qué trata básicamente?</div>
+                    </div>
+                </div>
+                <div class="strat-visual">
+                    <div class="umbrella-vis">
+                        <div class="uv-top">☂️</div>
+                        <div class="uv-label">CONCEPTO CENTRAL</div>
+                        <div class="uv-drops">
+                            <span>ejemplo</span><span>detalle</span><span>ejemplo</span><span>dato</span><span>ejemplo</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 13: ESTRATEGIA 8 – RESUMEN -->
+    <div class="slide" id="s13" data-bg="strat8">
+        <div class="slide-inner">
+            <div class="scene-badge">ESTRATEGIA 8 de 8</div>
+            <div class="strat-layout">
+                <div class="strat-visual">
+                    <div class="funnel-vis">
+                        <div class="fv-top">
+                            <span>palabras</span><span>ideas</span><span>datos</span>
+                            <span>ejemplos</span><span>párrafos</span><span>oraciones</span>
+                        </div>
+                        <div class="fv-arrow">⬇️</div>
+                        <div class="fv-bottom">✅ Resumen</div>
+                    </div>
+                </div>
+                <div class="strat-info">
+                    <h2 class="strat-title">📝 Resumir</h2>
+                    <p class="strat-desc">Un buen resumen captura las ideas esenciales en pocas palabras.</p>
+                    <div class="rules-list">
+                        <div class="rule-item ok">✅ Incluye solo lo esencial</div>
+                        <div class="rule-item no">❌ Elimina ejemplos y repeticiones</div>
+                        <div class="rule-item ok">✅ Usa tus propias palabras</div>
+                        <div class="rule-item ok">✅ Mantén el orden lógico</div>
+                        <div class="rule-item ok">✅ Breve pero completo</div>
+                    </div>
+                    <div class="luna-tip-box gold">
+                        <span class="ltip-char">👧</span>
+                        <p>¡Luna usó todas estas estrategias juntas para entender el libro mágico y encontrar el camino a casa!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 14: DESAFÍO FINAL (sala) -->
+    <div class="slide" id="s14" data-bg="final">
+        <div class="slide-inner center-all">
+            <div class="scene-badge">🏆 GRAN DESAFÍO FINAL</div>
+            <div class="q-center">
+                <div class="q-deco">🏆</div>
+                <h2 class="q-title">¡El Tesoro del Lector Sabio!</h2>
+                <div class="story-moment">
+                    <blockquote>"Luna llegó a la sala del tesoro. Frente a ella, un tomo antiguo decía: 'Para abrirme, debes demostrar que eres un verdadero Lector Sabio.' Luna sonrió. Sabía exactamente qué hacer."</blockquote>
+                </div>
+                <h3 class="q-text">¿Cuáles estrategias usaría Luna para comprender el libro del tesoro?</h3>
+                <div class="checklist-grid">
+                    <label><input type="checkbox"> 🧠 Conocimientos previos</label>
+                    <label><input type="checkbox"> 🔮 Predicciones</label>
+                    <label><input type="checkbox"> 👁️ Visualización</label>
+                    <label><input type="checkbox"> 🔗 Conexiones</label>
+                    <label><input type="checkbox"> ❓ Hacer preguntas</label>
+                    <label><input type="checkbox"> 🕵️ Inferencias</label>
+                    <label><input type="checkbox"> 🏔️ Idea principal</label>
+                    <label><input type="checkbox"> 📝 Resumir</label>
+                </div>
+                <button class="check-all-btn" onclick="checkAll()">✨ ¡Todas! Los lectores sabios usan todas las estrategias</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 15: CIERRE -->
+    <div class="slide" id="s15" data-bg="closing">
+        <div class="slide-inner center-all">
+            <div class="fireworks-wrap">
+                <span class="fw-item" style="--fx:10%;--fy:20%;--fd:0s">🎆</span>
+                <span class="fw-item" style="--fx:80%;--fy:15%;--fd:.3s">🎇</span>
+                <span class="fw-item" style="--fx:50%;--fy:35%;--fd:.6s">✨</span>
+                <span class="fw-item" style="--fx:20%;--fy:65%;--fd:.9s">🎉</span>
+                <span class="fw-item" style="--fx:75%;--fy:60%;--fd:1.2s">🌟</span>
+                <span class="fw-item" style="--fx:40%;--fy:10%;--fd:1.5s">🎊</span>
+            </div>
+            <div class="closing-char">
+                <div class="luna luna-lg celebrate">
+                    <div class="luna-hair"></div>
+                    <div class="luna-face">
+                        <div class="luna-eyes happy"><div class="l-eye h"></div><div class="r-eye h"></div></div>
+                        <div class="luna-big-smile"></div>
+                    </div>
+                    <div class="luna-body">
+                        <div class="luna-arm left raised"></div>
+                        <div class="luna-arm right raised"></div>
+                        <span class="luna-book-icon">📖</span>
+                    </div>
+                    <div class="luna-legs jumping"></div>
+                </div>
+            </div>
+            <div class="closing-text">
+                <h1>¡Luna lo logró! 🎊</h1>
+                <h2>¡Y tú también puedes!</h2>
+                <div class="strat-pills">
+                    <span>🧠 Conocimientos</span>
+                    <span>🔮 Predicciones</span>
+                    <span>👁️ Visualización</span>
+                    <span>🔗 Conexiones</span>
+                    <span>❓ Preguntas</span>
+                    <span>🕵️ Inferencias</span>
+                    <span>🏔️ Idea Principal</span>
+                    <span>📝 Resumen</span>
+                </div>
+                <p class="closing-quote">"La comprensión lectora no es un destino, es un viaje que nunca termina"</p>
+            </div>
+        </div>
+    </div>
+
+</div><!-- /slides-wrap -->
+
+<!-- NAVEGACIÓN -->
+<div id="navigation">
+    <button id="prev-btn" onclick="prevSlide()"><i class="fas fa-chevron-left"></i> Anterior</button>
+    <div id="nav-center">
+        <div id="dots-row"></div>
+        <span id="slide-count">1 / 15</span>
+    </div>
+    <button id="next-btn" onclick="nextSlide()">Siguiente <i class="fas fa-chevron-right"></i></button>
+</div>
+
+<!-- TIMER MODAL -->
+<div id="timer-modal" class="hidden">
+    <div class="timer-box">
+        <div id="timer-num">60</div>
+        <p>segundos para pensar…</p>
+        <button onclick="closeTimer()">✓ ¡Listo!</button>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
