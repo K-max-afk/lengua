@@ -1,550 +1,1377 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>El Viaje del Lector Sabio</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>El Archivo Perdido</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- React & React DOM CDN -->
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+
+  <!-- Babel CDN (para transpilar JSX al vuelo) -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <!-- Framer Motion CDN -->
+  <script src="https://unpkg.com/framer-motion@10.16.4/dist/framer-motion.js"></script>
+
+  <!-- Configuración personalizada de Tailwind e Inyección de Variables CSS -->
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'Helvetica Neue', 'sans-serif'],
+            serif: ['Cinzel', 'Georgia', 'serif'],
+            mono: ['Courier New', 'monospace']
+          },
+          colors: {
+            border: 'hsl(var(--border))',
+            input: 'hsl(var(--input))',
+            ring: 'hsl(var(--ring))',
+            background: 'hsl(var(--background))',
+            foreground: 'hsl(var(--foreground))',
+            primary: {
+              DEFAULT: 'hsl(var(--primary))',
+              foreground: 'hsl(var(--primary-foreground))'
+            },
+            secondary: {
+              DEFAULT: 'hsl(var(--secondary))',
+              foreground: 'hsl(var(--secondary-foreground))'
+            },
+            destructive: {
+              DEFAULT: 'hsl(var(--destructive))',
+              foreground: 'hsl(var(--destructive-foreground))'
+            },
+            muted: {
+              DEFAULT: 'hsl(var(--muted))',
+              foreground: 'hsl(var(--muted-foreground))'
+            },
+            accent: {
+              DEFAULT: 'hsl(var(--accent))',
+              foreground: 'hsl(var(--accent-foreground))'
+            },
+            popover: {
+              DEFAULT: 'hsl(var(--popover))',
+              foreground: 'hsl(var(--popover-foreground))'
+            },
+            card: {
+              DEFAULT: 'hsl(var(--card))',
+              foreground: 'hsl(var(--card-foreground))'
+            }
+          },
+          borderRadius: {
+            lg: 'var(--radius)',
+            md: 'calc(var(--radius) - 2px)',
+            sm: 'calc(var(--radius) - 4px)'
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    :root {
+      --background: 230 50% 4%;
+      --foreground: 40 20% 92%;
+      --muted: 230 25% 14%;
+      --muted-foreground: 230 15% 55%;
+      --popover: 230 40% 7%;
+      --popover-foreground: 40 20% 92%;
+      --border: 230 25% 16%;
+      --input: 230 25% 16%;
+      --card: 230 40% 7%;
+      --card-foreground: 40 20% 92%;
+      --primary: 38 92% 50%;
+      --primary-foreground: 230 50% 4%;
+      --secondary: 270 40% 20%;
+      --secondary-foreground: 40 20% 92%;
+      --accent: 270 50% 35%;
+      --accent-foreground: 40 20% 92%;
+      --destructive: 0 84% 60%;
+      --destructive-foreground: 0 0% 100%;
+      --ring: 38 92% 50%;
+      --radius: 0.75rem;
+    }
+
+    * {
+      border-color: hsl(var(--border));
+    }
+
+    body {
+      background-color: hsl(var(--background));
+      color: hsl(var(--foreground));
+      font-family: 'Inter', sans-serif;
+      overflow: hidden;
+      margin: 0;
+      padding: 0;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .font-serif {
+      font-family: 'Cinzel', Georgia, serif;
+    }
+
+    .glow-gold {
+      box-shadow: 0 0 20px hsl(38 92% 50% / 0.4), 0 0 60px hsl(38 92% 50% / 0.15);
+    }
+
+    .text-glow {
+      text-shadow: 0 0 20px hsl(38 92% 50% / 0.5), 0 0 40px hsl(38 92% 50% / 0.2);
+    }
+
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: hsl(38 92% 50% / 0.3); border-radius: 999px; }
+  </style>
 </head>
 <body>
+  <div id="root"></div>
 
-<canvas id="bg-canvas"></canvas>
+  <!-- Script JSX Principal -->
+  <script type="text/babel">
+    const { useState, useEffect, useRef, useCallback } = React;
+    const { motion, AnimatePresence } = window.FramerMotion;
 
-<div id="loading-screen">
-    <div class="load-logo">📚</div>
-    <h1>El Viaje del Lector Sabio</h1>
-    <div class="load-bar"><div class="load-fill" id="load-fill"></div></div>
-    <p id="load-text">Preparando tu aventura...</p>
-</div>
+    // --- ICONOS SVG (Lucide Replacements) ---
+    const IconRotateCcw = ({ className = "w-4 h-4" }) => (
+      <svg className={className} width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+    );
+    const IconMic = ({ className = "w-4 h-4" }) => (
+      <svg className={className} width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
+    );
+    const IconMicOff = ({ className = "w-4 h-4" }) => (
+      <svg className={className} width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="2" x2="22" y1="2" y2="22"/><path d="M18.89 13.23A7.12 7.12 0 0 0 19 12v-2"/><path d="M5 10v2a7 7 0 0 0 12 5"/><path d="M15 9.34V4a3 3 0 0 0-5.94-.6"/><path d="M9 9v3a3 3 0 0 0 5.12 2.12"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
+    );
+    const IconPlay = ({ className = "w-4 h-4" }) => (
+      <svg className={className} width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="6 3 20 12 6 21 6 3"/></svg>
+    );
+    const IconPause = ({ className = "w-4 h-4" }) => (
+      <svg className={className} width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="none"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+    );
+    const IconVolume2 = ({ className = "w-4 h-4" }) => (
+      <svg className={className} width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
+    );
+    const IconVolumeX = ({ className = "w-4 h-4" }) => (
+      <svg className={className} width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="22" x2="16" y1="9" y2="15"/><line x1="16" x2="22" y1="9" y2="15"/></svg>
+    );
+    const IconChevronUp = ({ className = "w-4 h-4" }) => (
+      <svg className={className} width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m18 15-6-6-6 6"/></svg>
+    );
+    const IconChevronDown = ({ className = "w-4 h-4" }) => (
+      <svg className={className} width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+    );
+    const IconChevronRight = ({ className = "w-4 h-4" }) => (
+      <svg className={className} width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+    );
 
-<div id="music-player">
-    <button id="play-pause-btn" title="Reproducir/Pausar">
-        <i class="fas fa-play" id="play-icon"></i>
-    </button>
-    <div class="vol-ctrl">
-        <i class="fas fa-volume-low"></i>
-        <input type="range" id="vol-slider" min="0" max="100" value="40">
-        <i class="fas fa-volume-high"></i>
-    </div>
-    <span class="music-label">🎵 Música Ambiental</span>
-</div>
+    // --- HOOKS & UTILS ---
+    function useSoundEffects() {
+      const ctxRef = useRef(null);
 
-<div id="slides-wrap">
+      const getCtx = useCallback(() => {
+        if (!ctxRef.current) ctxRef.current = new (window.AudioContext || window.webkitAudioContext)();
+        if (ctxRef.current.state === 'suspended') ctxRef.current.resume();
+        return ctxRef.current;
+      }, []);
 
-    <!-- SLIDE 1: TÍTULO -->
-    <div class="slide active" id="s1" data-bg="title">
-        <div class="cinematic-bar top"></div>
-        <div class="cinematic-bar bottom"></div>
-        <div class="slide-inner center-all">
-            <div class="title-character">
-                <div class="char-wrap">
-                    <div class="luna luna-hero">
-                        <div class="luna-hair"></div>
-                        <div class="luna-face">
-                            <div class="luna-eyes"><div class="l-eye"></div><div class="r-eye"></div></div>
-                            <div class="luna-smile"></div>
-                        </div>
-                        <div class="luna-body">
-                            <div class="luna-arm left"></div>
-                            <div class="luna-arm right"></div>
-                            <span class="luna-book-icon">📖</span>
-                        </div>
-                        <div class="luna-legs">
-                            <div class="luna-leg l"></div>
-                            <div class="luna-leg r"></div>
-                        </div>
-                    </div>
-                    <div class="orbit-items">
-                        <span class="orbit-item" style="--a:0deg">📚</span>
-                        <span class="orbit-item" style="--a:90deg">✨</span>
-                        <span class="orbit-item" style="--a:180deg">🔮</span>
-                        <span class="orbit-item" style="--a:270deg">⭐</span>
-                    </div>
-                </div>
-            </div>
-            <div class="title-text">
-                <div class="eyebrow-badge">✦ EXPERIENCIA CINEMATOGRÁFICA EDUCATIVA ✦</div>
-                <h1 class="hero-title">El Viaje del<br><span class="gradient-text">Lector Sabio</span></h1>
-                <p class="hero-sub">8 Estrategias para la Comprensión Lectora</p>
-                <div class="star-row">★ ★ ★ ★ ★</div>
-                <p class="author-note">Una aventura interactiva para el aula</p>
-            </div>
+      const play = useCallback((type) => {
+        try {
+          const ctx = getCtx();
+          const now = ctx.currentTime;
+
+          if (type === 'click') {
+            const o = ctx.createOscillator();
+            const g = ctx.createGain();
+            o.type = 'sine'; o.frequency.value = 800;
+            g.gain.setValueAtTime(0.15, now);
+            g.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+            o.connect(g).connect(ctx.destination);
+            o.start(now); o.stop(now + 0.08);
+          }
+
+          if (type === 'reveal') {
+            [600, 900, 1200].forEach((f, i) => {
+              const o = ctx.createOscillator();
+              const g = ctx.createGain();
+              o.type = 'sine'; o.frequency.value = f;
+              g.gain.setValueAtTime(0.1, now + i * 0.08);
+              g.gain.exponentialRampToValueAtTime(0.001, now + i * 0.08 + 0.2);
+              o.connect(g).connect(ctx.destination);
+              o.start(now + i * 0.08); o.stop(now + i * 0.08 + 0.2);
+            });
+          }
+
+          if (type === 'success') {
+            [523, 659, 784, 1047].forEach((f, i) => {
+              const o = ctx.createOscillator();
+              const g = ctx.createGain();
+              o.type = 'sine'; o.frequency.value = f;
+              g.gain.setValueAtTime(0.12, now + i * 0.12);
+              g.gain.exponentialRampToValueAtTime(0.001, now + i * 0.12 + 0.4);
+              o.connect(g).connect(ctx.destination);
+              o.start(now + i * 0.12); o.stop(now + i * 0.12 + 0.4);
+            });
+          }
+
+          if (type === 'whoosh') {
+            const bufSize = ctx.sampleRate * 0.4;
+            const buf = ctx.createBuffer(1, bufSize, ctx.sampleRate);
+            const data = buf.getChannelData(0);
+            for (let i = 0; i < bufSize; i++) data[i] = (Math.random() * 2 - 1) * 0.3;
+            const src = ctx.createBufferSource();
+            src.buffer = buf;
+            const f = ctx.createBiquadFilter();
+            f.type = 'bandpass'; f.frequency.value = 600; f.Q.value = 2;
+            const g = ctx.createGain();
+            g.gain.setValueAtTime(0.001, now);
+            g.gain.exponentialRampToValueAtTime(0.2, now + 0.1);
+            g.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
+            src.connect(f).connect(g).connect(ctx.destination);
+            src.start(now); src.stop(now + 0.4);
+          }
+
+          if (type === 'wind') {
+            const bufSize = ctx.sampleRate * 3;
+            const buf = ctx.createBuffer(1, bufSize, ctx.sampleRate);
+            const data = buf.getChannelData(0);
+            for (let i = 0; i < bufSize; i++) data[i] = (Math.random() * 2 - 1);
+            const src = ctx.createBufferSource();
+            src.buffer = buf;
+            const f = ctx.createBiquadFilter();
+            f.type = 'lowpass'; f.frequency.value = 400;
+            f.frequency.setValueAtTime(200, now);
+            f.frequency.linearRampToValueAtTime(500, now + 1.5);
+            f.frequency.linearRampToValueAtTime(150, now + 3);
+            const g = ctx.createGain();
+            g.gain.setValueAtTime(0.001, now);
+            g.gain.linearRampToValueAtTime(0.15, now + 0.8);
+            g.gain.linearRampToValueAtTime(0.08, now + 2);
+            g.gain.linearRampToValueAtTime(0.001, now + 3);
+            src.connect(f).connect(g).connect(ctx.destination);
+            src.start(now); src.stop(now + 3);
+          }
+
+          if (type === 'doorOpen') {
+            const o1 = ctx.createOscillator();
+            const g1 = ctx.createGain();
+            o1.type = 'sawtooth'; o1.frequency.value = 60;
+            g1.gain.setValueAtTime(0.15, now);
+            g1.gain.exponentialRampToValueAtTime(0.001, now + 1.5);
+            o1.connect(g1).connect(ctx.destination);
+            o1.start(now); o1.stop(now + 1.5);
+            [880, 1100, 1320].forEach((f, i) => {
+              const o = ctx.createOscillator();
+              const g = ctx.createGain();
+              o.type = 'sine'; o.frequency.value = f;
+              g.gain.setValueAtTime(0.08, now + 0.3 + i * 0.1);
+              g.gain.exponentialRampToValueAtTime(0.001, now + 0.3 + i * 0.1 + 0.8);
+              o.connect(g).connect(ctx.destination);
+              o.start(now + 0.3 + i * 0.1); o.stop(now + 0.3 + i * 0.1 + 0.8);
+            });
+          }
+
+          if (type === 'shake') {
+            const o = ctx.createOscillator();
+            const g = ctx.createGain();
+            o.type = 'sawtooth'; o.frequency.value = 40;
+            g.gain.setValueAtTime(0.2, now);
+            g.gain.exponentialRampToValueAtTime(0.001, now + 0.5);
+            o.connect(g).connect(ctx.destination);
+            o.start(now); o.stop(now + 0.5);
+          }
+
+          if (type === 'page') {
+            const bufSize = ctx.sampleRate * 0.25;
+            const buf = ctx.createBuffer(1, bufSize, ctx.sampleRate);
+            const data = buf.getChannelData(0);
+            for (let i = 0; i < bufSize; i++) data[i] = (Math.random() * 2 - 1) * 0.15;
+            const src = ctx.createBufferSource();
+            src.buffer = buf;
+            const f = ctx.createBiquadFilter();
+            f.type = 'highpass'; f.frequency.value = 2000;
+            const g = ctx.createGain();
+            g.gain.setValueAtTime(0.2, now);
+            g.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+            src.connect(f).connect(g).connect(ctx.destination);
+            src.start(now); src.stop(now + 0.25);
+          }
+
+          if (type === 'break') {
+            [3, 5, 7].forEach((mult, i) => {
+              const bufSize = ctx.sampleRate * 0.15;
+              const buf = ctx.createBuffer(1, bufSize, ctx.sampleRate);
+              const data = buf.getChannelData(0);
+              for (let j = 0; j < bufSize; j++) data[j] = (Math.random() * 2 - 1) * Math.exp(-j / (ctx.sampleRate * 0.02));
+              const src = ctx.createBufferSource();
+              src.buffer = buf;
+              const f = ctx.createBiquadFilter();
+              f.type = 'bandpass'; f.frequency.value = 200 * mult; f.Q.value = 3;
+              const g = ctx.createGain();
+              g.gain.setValueAtTime(0.25, now + i * 0.12);
+              g.gain.exponentialRampToValueAtTime(0.001, now + i * 0.12 + 0.15);
+              src.connect(f).connect(g).connect(ctx.destination);
+              src.start(now + i * 0.12); src.stop(now + i * 0.12 + 0.15);
+            });
+          }
+
+          if (type === 'magic') {
+            [1200, 1600, 2000, 2400, 3000].forEach((f, i) => {
+              const o = ctx.createOscillator();
+              const g = ctx.createGain();
+              o.type = 'sine'; o.frequency.value = f;
+              g.gain.setValueAtTime(0.08, now + i * 0.1);
+              g.gain.exponentialRampToValueAtTime(0.001, now + i * 0.1 + 0.3);
+              o.connect(g).connect(ctx.destination);
+              o.start(now + i * 0.1); o.stop(now + i * 0.1 + 0.3);
+            });
+          }
+
+          if (type === 'warning') {
+            [0, 0.25, 0.5].forEach(d => {
+              const o = ctx.createOscillator();
+              const g = ctx.createGain();
+              o.type = 'sawtooth'; o.frequency.value = 120;
+              g.gain.setValueAtTime(0.15, now + d);
+              g.gain.exponentialRampToValueAtTime(0.001, now + d + 0.2);
+              o.connect(g).connect(ctx.destination);
+              o.start(now + d); o.stop(now + d + 0.2);
+            });
+          }
+
+          if (type === 'illuminate') {
+            const o = ctx.createOscillator();
+            const g = ctx.createGain();
+            o.type = 'sine';
+            o.frequency.setValueAtTime(200, now);
+            o.frequency.exponentialRampToValueAtTime(1200, now + 1);
+            g.gain.setValueAtTime(0.001, now);
+            g.gain.linearRampToValueAtTime(0.15, now + 0.5);
+            g.gain.exponentialRampToValueAtTime(0.001, now + 1.2);
+            o.connect(g).connect(ctx.destination);
+            o.start(now); o.stop(now + 1.2);
+          }
+
+          if (type === 'descend') {
+            const o = ctx.createOscillator();
+            const g = ctx.createGain();
+            o.type = 'sine';
+            o.frequency.setValueAtTime(600, now);
+            o.frequency.exponentialRampToValueAtTime(150, now + 1.5);
+            g.gain.setValueAtTime(0.12, now);
+            g.gain.exponentialRampToValueAtTime(0.001, now + 1.5);
+            o.connect(g).connect(ctx.destination);
+            o.start(now); o.stop(now + 1.5);
+          }
+
+          if (type === 'rumble') {
+            const bufSize = ctx.sampleRate * 1.5;
+            const buf = ctx.createBuffer(1, bufSize, ctx.sampleRate);
+            const data = buf.getChannelData(0);
+            for (let i = 0; i < bufSize; i++) data[i] = (Math.random() * 2 - 1);
+            const src = ctx.createBufferSource();
+            src.buffer = buf;
+            const f = ctx.createBiquadFilter();
+            f.type = 'lowpass'; f.frequency.value = 100;
+            const g = ctx.createGain();
+            g.gain.setValueAtTime(0.001, now);
+            g.gain.linearRampToValueAtTime(0.25, now + 0.3);
+            g.gain.linearRampToValueAtTime(0.15, now + 0.8);
+            g.gain.exponentialRampToValueAtTime(0.001, now + 1.5);
+            src.connect(f).connect(g).connect(ctx.destination);
+            src.start(now); src.stop(now + 1.5);
+          }
+        } catch (e) {
+          // Audio not available
+        }
+      }, [getCtx]);
+
+      return play;
+    }
+
+    // --- COMPONENTES BASE ---
+    function Typewriter({ text, speed = 35, className = '', onComplete, delay = 0 }) {
+      const [idx, setIdx] = useState(0);
+      const [started, setStarted] = useState(delay === 0);
+      const stableComplete = useCallback(() => onComplete?.(), [onComplete]);
+
+      useEffect(() => {
+        if (delay > 0) { const t = setTimeout(() => setStarted(true), delay); return () => clearTimeout(t); }
+      }, [delay]);
+
+      useEffect(() => {
+        if (!started) return;
+        if (idx >= text.length) { stableComplete(); return; }
+        const t = setTimeout(() => setIdx(i => i + 1), speed);
+        return () => clearTimeout(t);
+      }, [idx, started, text.length, speed, stableComplete]);
+
+      useEffect(() => { setIdx(0); setStarted(delay === 0); }, [text, delay]);
+
+      return (
+        <motion.span className={className} initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+          {text.slice(0, idx)}
+          {idx < text.length && started && <span className="animate-pulse ml-0.5 text-primary">▌</span>}
+        </motion.span>
+      );
+    }
+
+    function ContinueButton({ onClick, delay = 0, label = 'Continuar' }) {
+      const [show, setShow] = useState(delay === 0);
+
+      useEffect(() => {
+        if (delay > 0) { const t = setTimeout(() => setShow(true), delay); return () => clearTimeout(t); }
+      }, [delay]);
+
+      if (!show) return null;
+
+      return (
+        <motion.button
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          whileHover={{ scale: 1.05, boxShadow: '0 0 30px hsl(38 92% 50% / 0.3)' }}
+          whileTap={{ scale: 0.95 }}
+          onClick={onClick}
+          className="relative z-50 inline-flex items-center gap-2 mt-8 px-8 py-3 bg-primary/10 border border-primary/40 text-primary rounded-full backdrop-blur-sm hover:bg-primary/20 hover:border-primary/60 transition-colors duration-300 text-sm tracking-[0.2em] uppercase font-medium cursor-pointer"
+        >
+          {label} <IconChevronRight className="w-4 h-4" />
+        </motion.button>
+      );
+    }
+
+    function Particles({ count = 120, color = '#d4a017' }) {
+      const ref = useRef(null);
+
+      useEffect(() => {
+        const c = ref.current;
+        if (!c) return;
+        const ctx = c.getContext('2d');
+        let id;
+        const stars = [];
+
+        const resize = () => { c.width = window.innerWidth; c.height = window.innerHeight; };
+        resize();
+        window.addEventListener('resize', resize);
+
+        for (let i = 0; i < count; i++) {
+          stars.push({
+            x: Math.random() * c.width, y: Math.random() * c.height,
+            s: Math.random() * 2 + 0.3, sp: Math.random() * 0.25 + 0.05,
+            o: Math.random() * 0.7 + 0.2, d: (Math.random() - 0.5) * 0.2,
+          });
+        }
+
+        const draw = () => {
+          ctx.clearRect(0, 0, c.width, c.height);
+          for (const p of stars) {
+            p.y -= p.sp; p.x += p.d;
+            p.o += (Math.random() - 0.5) * 0.015;
+            p.o = Math.max(0.1, Math.min(0.9, p.o));
+            if (p.y < -10) { p.y = c.height + 10; p.x = Math.random() * c.width; }
+            if (p.x < -10) p.x = c.width + 10;
+            if (p.x > c.width + 10) p.x = -10;
+            ctx.globalAlpha = p.o;
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.s, 0, Math.PI * 2);
+            ctx.fillStyle = color;
+            ctx.fill();
+          }
+          ctx.globalAlpha = 1;
+          id = requestAnimationFrame(draw);
+        };
+        draw();
+        return () => { cancelAnimationFrame(id); window.removeEventListener('resize', resize); };
+      }, [count, color]);
+
+      return <canvas ref={ref} className="fixed inset-0 pointer-events-none z-[5]" />;
+    }
+
+    function AudioControls() {
+      const MUSIC_URL = 'https://cdn.pixabay.com/audio/2025/03/10/audio_d047688dfd.mp3';
+      const [playing, setPlaying] = useState(false);
+      const [vol, setVol] = useState(0.3);
+      const [expanded, setExpanded] = useState(false);
+      const audioRef = useRef(null);
+
+      useEffect(() => {
+        const audio = new Audio(MUSIC_URL);
+        audio.loop = true;
+        audio.volume = vol;
+        audio.preload = 'auto';
+        audioRef.current = audio;
+        return () => { audio.pause(); audio.src = ''; };
+      }, []);
+
+      const togglePlay = useCallback(() => {
+        const audio = audioRef.current;
+        if (!audio) return;
+        if (playing) {
+          audio.pause();
+          setPlaying(false);
+        } else {
+          audio.volume = vol;
+          audio.play().then(() => setPlaying(true)).catch(() => {});
+        }
+      }, [playing, vol]);
+
+      useEffect(() => {
+        if (audioRef.current) audioRef.current.volume = vol;
+      }, [vol]);
+
+      return (
+        <motion.div
+          className="fixed bottom-6 right-6 z-50"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 2 }}
+        >
+          <div className="bg-card/80 backdrop-blur-md border border-border/50 rounded-2xl p-3 space-y-2">
+            <button onClick={() => setExpanded(!expanded)} className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors text-xs tracking-wider uppercase">
+              🎵 Audio {expanded ? <IconChevronDown className="w-3 h-3" /> : <IconChevronUp className="w-3 h-3" />}
+            </button>
+            <AnimatePresence>
+              {expanded && (
+                <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="space-y-2 overflow-hidden">
+                  <div className="flex items-center gap-2">
+                    <button onClick={togglePlay} className="w-8 h-8 flex items-center justify-center rounded-full bg-primary/20 text-primary hover:bg-primary/30 transition-colors">
+                      {playing ? <IconPause className="w-3.5 h-3.5" /> : <IconPlay className="w-3.5 h-3.5" />}
+                    </button>
+                    <button onClick={() => setVol(v => Math.min(1, v + 0.1))} className="w-7 h-7 flex items-center justify-center rounded-full bg-muted hover:bg-muted/80 text-foreground/70 transition-colors">
+                      <IconVolume2 className="w-3 h-3" />
+                    </button>
+                    <button onClick={() => setVol(v => Math.max(0, v - 0.1))} className="w-7 h-7 flex items-center justify-center rounded-full bg-muted hover:bg-muted/80 text-foreground/70 transition-colors">
+                      <IconVolumeX className="w-3 h-3" />
+                    </button>
+                  </div>
+                  <p className="text-muted-foreground/60 text-[10px] text-center">Heartwarming Story · Pixabay</p>
+                  <div className="h-1 bg-muted rounded-full overflow-hidden">
+                    <div className="h-full bg-primary/60 rounded-full transition-all" style={{ width: `${vol * 100}%` }} />
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        </motion.div>
+      );
+    }
+
+    function AIButton() {
+      const WEBHOOK_URL = "https://chispy.app.n8n.cloud/webhook/chispi-chat";
+      const [on, setOn] = useState(false);
+      const [status, setStatus] = useState('');
+      const recognitionRef = useRef(null);
+
+      const speak = useCallback((text) => {
+        setStatus('Chispi: ' + text);
+        const u = new SpeechSynthesisUtterance(text);
+        u.lang = 'es-ES';
+        window.speechSynthesis.speak(u);
+      }, []);
+
+      const toggle = useCallback(() => {
+        const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!SR) {
+          setStatus('Tu navegador no soporta voz (usa Chrome).');
+          return;
+        }
+
+        if (!on) {
+          if (!recognitionRef.current) {
+            const rec = new SR();
+            rec.lang = 'es-ES';
+            rec.continuous = true;
+            rec.interimResults = false;
+            rec.onresult = async (e) => {
+              const texto = e.results[e.results.length - 1][0].transcript.trim();
+              if (!texto) return;
+              setStatus('Tú: ' + texto);
+              try {
+                const r = await fetch(WEBHOOK_URL, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ message: texto }),
+                });
+                const data = await r.json();
+                speak(data.reply);
+              } catch {
+                setStatus('Ups, no pude contactar a Chispi.');
+              }
+            };
+            rec.onend = () => {
+              if (recognitionRef.current?._active) {
+                try { rec.start(); } catch {}
+              }
+            };
+            recognitionRef.current = rec;
+          }
+          recognitionRef.current._active = true;
+          try { recognitionRef.current.start(); } catch {}
+          setOn(true);
+        } else {
+          if (recognitionRef.current) {
+            recognitionRef.current._active = false;
+            try { recognitionRef.current.stop(); } catch {}
+          }
+          window.speechSynthesis.cancel();
+          setOn(false);
+          setStatus('');
+        }
+      }, [on, speak]);
+
+      return (
+        <div className="fixed bottom-6 left-6 z-50 flex flex-col items-center gap-2">
+          {status && (
+            <motion.div
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="max-w-[220px] bg-card/90 backdrop-blur-md border border-border/50 rounded-xl px-3 py-2 text-xs text-foreground/80 text-center"
+            >
+              {status}
+            </motion.div>
+          )}
+          <motion.button
+            onClick={toggle}
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 2.5 }}
+            className={`w-14 h-14 rounded-full border backdrop-blur-md flex items-center justify-center shadow-lg cursor-pointer transition-colors ${
+              on
+                ? 'bg-emerald-600/80 border-emerald-400/40 text-white shadow-emerald-500/20'
+                : 'bg-destructive/80 border-destructive/40 text-white shadow-destructive/20'
+            }`}
+          >
+            {on ? <IconMic className="w-6 h-6" /> : <IconMicOff className="w-6 h-6" />}
+          </motion.button>
+          <span className="text-[10px] text-foreground/50 font-medium">
+            {on ? '🎤 Chispi encendida' : '🔇 Chispi apagada'}
+          </span>
         </div>
-    </div>
+      );
+    }
 
-    <!-- SLIDE 2: LA HISTORIA COMIENZA -->
-    <div class="slide" id="s2" data-bg="story">
-        <div class="slide-inner">
-            <div class="scene-badge">ESCENA I · El Descubrimiento</div>
-            <div class="story-layout">
-                <div class="char-panel">
-                    <div class="luna luna-md surprised">
-                        <div class="luna-hair"></div>
-                        <div class="luna-face">
-                            <div class="luna-eyes wide"><div class="l-eye"></div><div class="r-eye"></div></div>
-                            <div class="luna-mouth-o"></div>
-                        </div>
-                        <div class="luna-body">
-                            <div class="luna-arm left reach"></div>
-                            <div class="luna-arm right"></div>
-                        </div>
-                        <div class="luna-legs"></div>
+    // --- ESCENAS ---
+
+    // SCENE 1: INTRO
+    function IntroScene({ onNext }) {
+      const BG = "https://images.fillout.com/783226/gr81wn8thr/generated-images/2hr1mziVNVk2RnJrbavshA/img_KHI_TNKXJYgZXOK1.jpg";
+      const GUARDIAN = "https://images.fillout.com/783226/gr81wn8thr/generated-images/6vqeUVyNQDeaaU38uE8nRF/img_BafXbEzmY9gKEOuV.jpg";
+      const [p, setP] = useState(0);
+      const [shake, setShake] = useState(false);
+      const sfx = useSoundEffects();
+
+      useEffect(() => {
+        if (p === 0) {
+          sfx('wind');
+          const t = setTimeout(() => { sfx('whoosh'); setP(1); }, 4500);
+          return () => clearTimeout(t);
+        }
+      }, [p, sfx]);
+
+      return (
+        <motion.div className="relative w-full h-full overflow-hidden" animate={shake ? { x: [0, -6, 6, -4, 4, 0] } : {}} transition={{ duration: 0.5 }}>
+          <AnimatePresence>{p >= 1 && (
+            <motion.img key="bg" src={BG} initial={{ opacity: 0, scale: 1.1 }} animate={{ opacity: 0.5, scale: 1 }} transition={{ duration: 4 }} className="absolute inset-0 w-full h-full object-cover" alt="" />
+          )}</AnimatePresence>
+          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/60 to-black/40" />
+
+          <div className="relative z-10 h-full flex flex-col items-center justify-center px-6 md:px-12">
+            <AnimatePresence mode="wait">
+              {p === 0 && (
+                <motion.div key="s0" exit={{ opacity: 0 }} className="absolute inset-0 flex items-center justify-center">
+                  <motion.div
+                    className="w-3 h-3 rounded-full bg-primary"
+                    initial={{ scale: 0, opacity: 0 }}
+                    animate={{ scale: [0, 1.5, 1], opacity: [0, 0.8, 0.5], boxShadow: ['0 0 0px hsl(38 92% 50% / 0)', '0 0 60px hsl(38 92% 50% / 0.5)', '0 0 30px hsl(38 92% 50% / 0.3)'] }}
+                    transition={{ duration: 3, delay: 1.5 }}
+                  />
+                </motion.div>
+              )}
+
+              {p === 1 && (
+                <motion.div key="s1" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="text-center max-w-3xl space-y-4">
+                  <motion.div className="text-primary/40 text-xs tracking-[0.4em] uppercase mb-4" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }}>Escena 1 · El Despertar del Archivo</motion.div>
+                  <h1 className="text-5xl md:text-7xl font-serif text-primary text-glow"><Typewriter text="EL ARCHIVO PERDIDO" speed={90} /></h1>
+                  <motion.p className="text-foreground/60 text-lg tracking-wider" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 3 }}>
+                    Una aventura para recuperar el conocimiento olvidado
+                  </motion.p>
+                  <ContinueButton onClick={() => { sfx('page'); setP(2); }} delay={4500} label="Comenzar aventura" />
+                </motion.div>
+              )}
+
+              {p === 2 && (
+                <motion.div key="s2" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex flex-col md:flex-row items-center gap-8 max-w-5xl w-full">
+                  <motion.div className="w-44 h-56 md:w-56 md:h-72 rounded-2xl overflow-hidden border-2 border-primary/30 glow-gold flex-shrink-0"
+                    initial={{ x: -80, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ duration: 1.5 }}>
+                    <img src={GUARDIAN} className="w-full h-full object-cover" alt="Guardián" />
+                  </motion.div>
+                  <div className="text-left space-y-3 max-w-xl">
+                    <p className="text-primary font-serif text-xl md:text-2xl">Guardián del Archivo</p>
+                    <p className="text-foreground/85 text-lg md:text-xl leading-relaxed">
+                      <Typewriter text="Durante miles de años este lugar protegió todo el conocimiento de la humanidad. Cada historia. Cada descubrimiento. Cada aprendizaje. Pero algo ocurrió... El Archivo comenzó a perder sus palabras." speed={28} onComplete={() => { sfx('rumble'); sfx('shake'); setShake(true); setTimeout(() => setShake(false), 700); }} />
+                    </p>
+                    <motion.p className="text-foreground/50 italic text-sm" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 10 }}>
+                      Necesito nuevos exploradores. Personas capaces de leer más allá de las palabras.
+                    </motion.p>
+                    <ContinueButton onClick={() => { sfx('click'); setP(3); }} delay={12000} />
+                  </div>
+                </motion.div>
+              )}
+
+              {p === 3 && (
+                <motion.div key="s3" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="text-center max-w-3xl space-y-6">
+                  <motion.div className="w-16 h-16 mx-auto rounded-full bg-primary/10 border border-primary/30 flex items-center justify-center text-2xl" animate={{ scale: [1, 1.1, 1] }} transition={{ repeat: Infinity, duration: 3 }}>❓</motion.div>
+                  <p className="text-primary/50 text-xs tracking-[0.3em] uppercase">Pregunta para los exploradores</p>
+                  <h2 className="text-xl md:text-3xl font-serif text-foreground leading-relaxed">
+                    <Typewriter text="Cuando leen un texto... ¿Creen que solamente basta con conocer las palabras o existe algo más importante que debemos descubrir?" speed={30} />
+                  </h2>
+                  <ContinueButton onClick={() => { sfx('click'); setP(4); }} delay={7000} />
+                </motion.div>
+              )}
+
+              {p === 4 && (
+                <motion.div key="s4" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="max-w-4xl w-full space-y-6">
+                  <p className="text-primary/50 text-xs tracking-[0.3em] uppercase text-center">Activando la Memoria</p>
+                  <div className="flex flex-col md:flex-row items-start gap-6">
+                    <motion.div className="w-36 h-44 md:w-44 md:h-56 rounded-xl overflow-hidden border border-primary/20 flex-shrink-0" initial={{ y: 30, opacity: 0 }} animate={{ y: 0, opacity: 1 }}>
+                      <img src={GUARDIAN} className="w-full h-full object-cover" alt="" />
+                    </motion.div>
+                    <div className="space-y-4">
+                      <p className="text-foreground/85 text-lg md:text-xl leading-relaxed">
+                        <Typewriter text="¿Qué conocen sobre este tema? ¿Han visto algo parecido? ¿Han vivido una experiencia relacionada?" speed={30} />
+                      </p>
+                      <motion.p className="text-foreground/60 italic border-l-2 border-primary/30 pl-4" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 5 }}>
+                        "Ningún conocimiento comienza desde cero. Todo gran descubrimiento nace de aquello que ya conocemos."
+                      </motion.p>
                     </div>
-                </div>
-                <div class="narrative-panel">
-                    <div class="speech-box">
-                        <p>Era un martes ordinario cuando <strong>Luna</strong>, una estudiante de 12 años, encontró en la biblioteca un libro diferente. Su portada brillaba con luz dorada y las letras cambiaban de forma, como si estuvieran vivas...</p>
+                  </div>
+                  <div className="text-center"><ContinueButton onClick={() => { sfx('whoosh'); onNext(); }} delay={6000} label="Siguiente escena" /></div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        </motion.div>
+      );
+    }
+
+    // SCENE 2: DOOR
+    function DoorScene({ onNext }) {
+      const BG = "https://images.fillout.com/783226/gr81wn8thr/generated-images/dWujkkFPMyZQVsLSFcRv5Q/img_3lpIaZlr_0AkL_J4.jpg";
+      const GUARDIAN = "https://images.fillout.com/783226/gr81wn8thr/generated-images/6vqeUVyNQDeaaU38uE8nRF/img_BafXbEzmY9gKEOuV.jpg";
+      const OBSERVATION_IMG = "https://images.fillout.com/783226/gr81wn8thr/generated-images/7EEvFf9LUbWaxNJJ9cXL9z/img_nvCp7Hv_qTYGSh82.jpg";
+
+      const symbols = [
+        { emoji: '👁️', label: 'Observar', desc: 'Mirar más allá de lo evidente' },
+        { emoji: '📖', label: 'Leer', desc: 'Sumergirse en las palabras' },
+        { emoji: '❓', label: 'Cuestionar', desc: 'Preguntar el porqué de las cosas' },
+        { emoji: '🔍', label: 'Descubrir', desc: 'Encontrar lo que está oculto' },
+      ];
+
+      const hiddenDetails = [
+        { x: '15%', y: '30%', label: 'Brújula antigua', desc: 'Señala el camino del conocimiento' },
+        { x: '55%', y: '20%', label: 'Escritura misteriosa', desc: 'Símbolos de una civilización olvidada' },
+        { x: '75%', y: '55%', label: 'Monedas antiguas', desc: 'Representan el valor del saber' },
+        { x: '35%', y: '65%', label: 'Lupa', desc: 'La herramienta del explorador' },
+      ];
+
+      const [p, setP] = useState(0);
+      const [revealed, setRevealed] = useState([]);
+      const [doorOpen, setDoorOpen] = useState(false);
+      const [foundDetails, setFoundDetails] = useState([]);
+      const sfx = useSoundEffects();
+
+      const revealSymbol = (i) => {
+        if (revealed.includes(i)) return;
+        sfx('reveal');
+        setRevealed(prev => [...prev, i]);
+      };
+
+      const discoverDetail = (i) => {
+        if (foundDetails.includes(i)) return;
+        sfx('click');
+        setFoundDetails(prev => [...prev, i]);
+      };
+
+      const handleDoorOpen = () => {
+        sfx('doorOpen');
+        setDoorOpen(true);
+        setTimeout(onNext, 2500);
+      };
+
+      return (
+        <div className="relative w-full h-full overflow-hidden">
+          <motion.img src={BG} className="absolute inset-0 w-full h-full object-cover" alt=""
+            initial={{ opacity: 0 }} animate={{ opacity: doorOpen ? 0.15 : 0.45, scale: doorOpen ? 1.15 : 1 }} transition={{ duration: 2 }} />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/60 to-black/30" />
+
+          <div className="relative z-10 h-full flex flex-col items-center justify-center px-6 md:px-12 overflow-y-auto">
+            <AnimatePresence mode="wait">
+              {p === 0 && (
+                <motion.div key="d0" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="text-center max-w-3xl space-y-6">
+                  <p className="text-primary/40 text-xs tracking-[0.4em] uppercase">Escena 2 · La Puerta de las Primeras Pistas</p>
+                  <h2 className="text-3xl md:text-5xl font-serif text-primary text-glow">
+                    <Typewriter text="La Puerta de los Símbolos" speed={60} />
+                  </h2>
+                  <div className="flex items-start gap-4 text-left mt-8">
+                    <img src={GUARDIAN} className="w-28 h-36 md:w-36 md:h-44 rounded-xl object-cover border border-primary/20" alt="" />
+                    <p className="text-foreground/80 text-lg md:text-xl leading-relaxed">
+                      <Typewriter text="Esta puerta no se abre con una llave. Se abre observando. Antes de leer... los antiguos exploradores estudiaban cada pista." speed={28} />
+                    </p>
+                  </div>
+                  <ContinueButton onClick={() => { sfx('click'); setP(1); }} delay={7000} label="Descubrir símbolos" />
+                </motion.div>
+              )}
+
+              {p === 1 && (
+                <motion.div key="d1" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="text-center max-w-2xl space-y-6">
+                  <p className="text-foreground/60 text-sm">Toca cada símbolo para descubrir su significado</p>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    {symbols.map((s, i) => (
+                      <motion.button key={i} onClick={() => revealSymbol(i)}
+                        whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
+                        className={`p-6 rounded-2xl border transition-all duration-500 ${revealed.includes(i) ? 'bg-primary/15 border-primary/50 glow-gold' : 'bg-card/50 border-border/30 hover:border-primary/30'}`}>
+                        <div className="text-4xl mb-3">{s.emoji}</div>
+                        <p className="text-primary font-serif text-sm">{s.label}</p>
+                        <AnimatePresence>{revealed.includes(i) && (
+                          <motion.p initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="text-foreground/60 text-xs mt-2">{s.desc}</motion.p>
+                        )}</AnimatePresence>
+                      </motion.button>
+                    ))}
+                  </div>
+                  {revealed.length === 4 && <ContinueButton onClick={() => { sfx('whoosh'); setP(2); }} label="Observar la imagen" />}
+                </motion.div>
+              )}
+
+              {p === 2 && (
+                <motion.div key="d2" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="max-w-4xl w-full space-y-4">
+                  <p className="text-primary/50 text-xs tracking-[0.3em] uppercase text-center">Observación · Descubrir Detalles Ocultos</p>
+                  <p className="text-foreground/50 text-sm text-center">Explora la imagen y toca los puntos brillantes para descubrir las pistas</p>
+                  <div className="relative rounded-2xl overflow-hidden border border-primary/20 glow-gold">
+                    <img src={OBSERVATION_IMG} className="w-full h-auto" alt="Mapa antiguo con pistas" />
+                    <div className="absolute inset-0 bg-black/20" />
+                    {hiddenDetails.map((d, i) => (
+                      <motion.button key={i}
+                        onClick={() => discoverDetail(i)}
+                        className="absolute"
+                        style={{ left: d.x, top: d.y }}
+                        whileHover={{ scale: 1.3 }}
+                        whileTap={{ scale: 0.9 }}
+                      >
+                        {foundDetails.includes(i) ? (
+                          <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }}
+                            className="w-10 h-10 rounded-full bg-primary/30 border-2 border-primary flex items-center justify-center text-xs font-bold text-primary backdrop-blur-sm">
+                            ✓
+                          </motion.div>
+                        ) : (
+                          <motion.div
+                            className="w-8 h-8 rounded-full border-2 border-primary/60 bg-primary/10 backdrop-blur-sm"
+                            animate={{ scale: [1, 1.3, 1], opacity: [0.6, 1, 0.6] }}
+                            transition={{ duration: 2, repeat: Infinity }}
+                          />
+                        )}
+                      </motion.button>
+                    ))}
+                  </div>
+                  {foundDetails.length > 0 && (
+                    <div className="grid grid-cols-2 gap-2">
+                      {foundDetails.map(i => (
+                        <motion.div key={i} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+                          className="p-3 bg-card/50 border border-primary/20 rounded-xl">
+                          <p className="text-primary text-xs font-medium">{hiddenDetails[i].label}</p>
+                          <p className="text-foreground/60 text-xs">{hiddenDetails[i].desc}</p>
+                        </motion.div>
+                      ))}
                     </div>
-                    <div class="magic-book-wrap">
-                        <div class="magic-book">
-                            <span class="mb-icon">📖</span>
-                            <div class="mb-glow"></div>
-                            <div class="mb-sparks">
-                                <span style="--ang:20deg">✨</span>
-                                <span style="--ang:100deg">⭐</span>
-                                <span style="--ang:200deg">💫</span>
-                                <span style="--ang:300deg">🌟</span>
-                            </div>
-                        </div>
-                        <p class="book-whisper">"Quien me lea aprenderá a leer el mundo…"</p>
-                    </div>
-                </div>
-            </div>
+                  )}
+                  {foundDetails.length === hiddenDetails.length && (
+                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center">
+                      <ContinueButton onClick={() => { sfx('success'); setP(3); }} label="Continuar" />
+                    </motion.div>
+                  )}
+                </motion.div>
+              )}
+
+              {p === 3 && (
+                <motion.div key="d3" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="text-center max-w-3xl space-y-6">
+                  <motion.div className="w-16 h-16 mx-auto rounded-full bg-primary/10 border border-primary/30 flex items-center justify-center text-2xl" animate={{ scale: [1, 1.1, 1] }} transition={{ repeat: Infinity, duration: 3 }}>🔮</motion.div>
+                  <p className="text-primary/50 text-xs tracking-[0.3em] uppercase">Pregunta para los exploradores</p>
+                  <h2 className="text-xl md:text-3xl font-serif text-foreground leading-relaxed">
+                    <Typewriter text="Observando estas pistas... ¿De qué creen que tratará esta historia?" speed={30} />
+                  </h2>
+                  <motion.p className="text-foreground/50 italic text-sm" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 5 }}>
+                    "Acaban de realizar la primera habilidad de un verdadero lector: imaginar antes de leer."
+                  </motion.p>
+                  <ContinueButton onClick={() => { sfx('click'); setP(4); }} delay={6000} />
+                </motion.div>
+              )}
+
+              {p === 4 && (
+                <motion.div key="d4" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="text-center max-w-3xl space-y-6">
+                  <motion.div className="p-6 bg-card/60 border border-primary/20 rounded-2xl backdrop-blur-sm" initial={{ y: 30 }} animate={{ y: 0 }}>
+                    <p className="text-primary/70 font-serif italic text-lg">"Todo explorador debe conocer el propósito de su viaje."</p>
+                  </motion.div>
+                  <p className="text-primary/50 text-xs tracking-[0.3em] uppercase">El Objetivo de la Misión</p>
+                  <h2 className="text-xl md:text-2xl font-serif text-foreground leading-relaxed">
+                    <Typewriter text="¿Qué creen que debemos descubrir cuando leamos este manuscrito? ¿Cuál será nuestra misión?" speed={30} />
+                  </h2>
+                  <ContinueButton onClick={handleDoorOpen} delay={6000} label="Abrir la puerta" />
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
         </div>
-    </div>
+      );
+    }
 
-    <!-- SLIDE 3: PREGUNTA 1 (sala) -->
-    <div class="slide" id="s3" data-bg="question">
-        <div class="slide-inner center-all">
-            <div class="scene-badge">💬 PREGUNTA PARA LA SALA</div>
-            <div class="q-center">
-                <div class="q-deco">🤔</div>
-                <h2 class="q-title">Antes de leer un texto…</h2>
-                <h3 class="q-text">¿Qué haces para prepararte para la lectura?</h3>
-                <div class="options-grid">
-                    <div class="opt-card" onclick="pickOption(this)"><span>👀</span><p>Observo las imágenes y el título</p></div>
-                    <div class="opt-card" onclick="pickOption(this)"><span>💭</span><p>Pienso en lo que ya sé del tema</p></div>
-                    <div class="opt-card" onclick="pickOption(this)"><span>📖</span><p>Empiezo a leer directamente</p></div>
-                    <div class="opt-card" onclick="pickOption(this)"><span>🎯</span><p>Me hago preguntas sobre el tema</p></div>
-                </div>
-            </div>
-        </div>
-    </div>
+    // SCENE 3: MANUSCRIPT
+    function ManuscriptScene({ onNext }) {
+      const BG = "https://images.fillout.com/783226/gr81wn8thr/generated-images/j2UvFnWwVb9XZ5dzJytEbA/img_13T0DX7yo_L9Dfss.jpg";
+      const GUARDIAN = "https://images.fillout.com/783226/gr81wn8thr/generated-images/6vqeUVyNQDeaaU38uE8nRF/img_BafXbEzmY9gKEOuV.jpg";
 
-    <!-- SLIDE 4: ESTRATEGIA 1 – CONOCIMIENTOS PREVIOS -->
-    <div class="slide" id="s4" data-bg="strat1">
-        <div class="slide-inner">
-            <div class="scene-badge">ESTRATEGIA 1 de 8</div>
-            <div class="strat-layout">
-                <div class="strat-visual">
-                    <div class="brain-wrap">
-                        <div class="brain-core">🧠</div>
-                        <div class="brain-nodes">
-                            <span class="bnode" style="--ang:0deg;--d:0s">📚 Lectura</span>
-                            <span class="bnode" style="--ang:60deg;--d:.15s">🏫 Escuela</span>
-                            <span class="bnode" style="--ang:120deg;--d:.3s">👨‍👩‍👧 Familia</span>
-                            <span class="bnode" style="--ang:180deg;--d:.45s">🌍 Mundo</span>
-                            <span class="bnode" style="--ang:240deg;--d:.6s">💡 Ideas</span>
-                            <span class="bnode" style="--ang:300deg;--d:.75s">❤️ Sentir</span>
+      const textParts = [
+        { text: 'En lo más profundo del Archivo,', key: false },
+        { text: 'las palabras guardan secretos que solo los verdaderos lectores pueden descifrar.', key: true },
+        { text: 'No basta con recorrer las letras;', key: false },
+        { text: 'hay que buscar las conexiones invisibles entre las ideas.', key: true },
+        { text: 'Cada párrafo es una puerta,', key: false },
+        { text: 'y la comprensión es la llave que las abre.', key: true },
+      ];
+
+      const shadowWords = [
+        { word: 'descifrar', context: 'secretos que solo los verdaderos lectores pueden ___', meaning: 'Interpretar, comprender algo difícil' },
+        { word: 'conexiones', context: 'buscar las ___ invisibles entre las ideas', meaning: 'Relaciones, vínculos entre conceptos' },
+        { word: 'comprensión', context: 'la ___ es la llave que las abre', meaning: 'Capacidad de entender el significado profundo' },
+      ];
+
+      const [p, setP] = useState(0);
+      const [highlighted, setHighlighted] = useState([]);
+      const [solvedShadows, setSolvedShadows] = useState([]);
+      const sfx = useSoundEffects();
+
+      const toggleHighlight = (i) => {
+        if (!textParts[i].key) return;
+        if (!highlighted.includes(i)) {
+          sfx('reveal');
+          setHighlighted(prev => [...prev, i]);
+        }
+      };
+
+      const solveShadow = (i) => {
+        if (!solvedShadows.includes(i)) {
+          sfx('click');
+          setSolvedShadows(prev => [...prev, i]);
+        }
+      };
+
+      return (
+        <div className="relative w-full h-full overflow-hidden">
+          <motion.img src={BG} className="absolute inset-0 w-full h-full object-cover" alt=""
+            initial={{ opacity: 0 }} animate={{ opacity: 0.4 }} transition={{ duration: 2 }} />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/60 to-black/30" />
+
+          <div className="relative z-10 h-full flex flex-col items-center justify-center px-6 md:px-12">
+            <AnimatePresence mode="wait">
+              {p === 0 && (
+                <motion.div key="m0" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="text-center max-w-3xl space-y-6">
+                  <p className="text-primary/40 text-xs tracking-[0.4em] uppercase">Escena 3 · El Manuscrito Olvidado</p>
+                  <h2 className="text-3xl md:text-5xl font-serif text-primary text-glow"><Typewriter text="El Antiguo Texto" speed={60} /></h2>
+                  <div className="flex items-start gap-4 text-left mt-8">
+                    <img src={GUARDIAN} className="w-28 h-36 md:w-36 md:h-44 rounded-xl object-cover border border-primary/20" alt="" />
+                    <p className="text-foreground/80 text-lg md:text-xl leading-relaxed">
+                      <Typewriter text="Hemos entrado a la sala del gran Manuscrito. Aquí debemos buscar las ideas más importantes para reconstruir el conocimiento." speed={28} />
+                    </p>
+                  </div>
+                  <ContinueButton onClick={() => { sfx('page'); setP(1); }} delay={7000} label="Leer el manuscrito" />
+                </motion.div>
+              )}
+
+              {p === 1 && (
+                <motion.div key="m1" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="max-w-3xl w-full space-y-6 text-center">
+                  <p className="text-primary/50 text-xs tracking-[0.3em] uppercase">Toca los fragmentos clave para iluminarlos</p>
+                  <div className="p-8 bg-card/80 border border-primary/30 rounded-2xl backdrop-blur-md space-y-4 glow-gold">
+                    <p className="text-lg md:text-2xl font-serif leading-relaxed">
+                      {textParts.map((part, i) => (
+                        <span key={i} onClick={() => toggleHighlight(i)}
+                          className={`cursor-pointer transition-all duration-300 rounded px-1 ${highlighted.includes(i) ? 'bg-primary/30 text-primary font-semibold' : 'hover:bg-primary/10'}`}>
+                          {part.text}{' '}
+                        </span>
+                      ))}
+                    </p>
+                  </div>
+                  {highlighted.length === 3 && (
+                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4">
+                      <p className="text-primary text-sm font-serif">✨ ¡Has iluminado las ideas principales!</p>
+                      <ContinueButton onClick={() => { sfx('whoosh'); setP(2); }} label="Avanzar a las Palabras Sombra" />
+                    </motion.div>
+                  )}
+                </motion.div>
+              )}
+
+              {p === 2 && (
+                <motion.div key="m2" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="max-w-3xl w-full space-y-6 text-center">
+                  <p className="text-primary/50 text-xs tracking-[0.3em] uppercase">Las Palabras Sombra</p>
+                  <p className="text-foreground/60 text-sm">Descifra el significado de estas palabras usando el contexto</p>
+                  <div className="space-y-4">
+                    {shadowWords.map((sw, i) => (
+                      <motion.div key={i} className="p-4 bg-card/60 border border-border/40 rounded-xl text-left flex items-center justify-between">
+                        <div>
+                          <p className="text-primary font-serif font-medium">{sw.word}</p>
+                          <p className="text-foreground/60 text-xs mt-1">"{sw.context}"</p>
+                          {solvedShadows.includes(i) && <p className="text-emerald-400 text-xs mt-1">💡 {sw.meaning}</p>}
                         </div>
-                    </div>
-                </div>
-                <div class="strat-info">
-                    <h2 class="strat-title">🧠 Activar Conocimientos Previos</h2>
-                    <p class="strat-desc">Antes de leer, tu cerebro ya tiene información valiosa. ¡Úsala para comprender mejor!</p>
-                    <div class="steps-list">
-                        <div class="step-item"><span class="sn">1</span><p>Observa el título, imágenes y subtítulos</p></div>
-                        <div class="step-item"><span class="sn">2</span><p>Pregúntate: ¿Qué sé sobre este tema?</p></div>
-                        <div class="step-item"><span class="sn">3</span><p>Relaciona con experiencias personales</p></div>
-                        <div class="step-item"><span class="sn">4</span><p>Activa recuerdos y conocimientos similares</p></div>
-                    </div>
-                    <div class="luna-tip-box">
-                        <span class="ltip-char">👧</span>
-                        <p>Luna usó esta estrategia para entender el mapa del libro mágico. ¡Ya sabía sobre mapas y puntos cardinales!</p>
-                    </div>
-                </div>
-            </div>
+                        <button onClick={() => solveShadow(i)} className={`px-4 py-2 rounded-lg text-xs font-medium transition-colors ${solvedShadows.includes(i) ? 'bg-emerald-500/20 text-emerald-400' : 'bg-primary/20 text-primary hover:bg-primary/30'}`}>
+                          {solvedShadows.includes(i) ? 'Descifrado' : 'Descifrar'}
+                        </button>
+                      </motion.div>
+                    ))}
+                  </div>
+                  {solvedShadows.length === 3 && <ContinueButton onClick={() => { sfx('success'); onNext(); }} label="Siguiente escena" />}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
         </div>
-    </div>
+      );
+    }
 
-    <!-- SLIDE 5: ESTRATEGIA 2 – PREDICCIONES -->
-    <div class="slide" id="s5" data-bg="strat2">
-        <div class="slide-inner">
-            <div class="scene-badge">ESTRATEGIA 2 de 8</div>
-            <div class="strat-layout reverse">
-                <div class="strat-info">
-                    <h2 class="strat-title">🔮 Hacer Predicciones</h2>
-                    <p class="strat-desc">¡Tu mente es una máquina de predicciones! Imagina qué sucederá antes de que pase.</p>
-                    <div class="predict-game">
-                        <div class="clue-box">
-                            <span style="font-size:2rem">☁️</span>
-                            <p><em>"El cielo se oscureció de repente. Luna escuchó un trueno a lo lejos…"</em></p>
-                        </div>
-                        <p class="predict-q">🔮 ¿Qué crees que pasará?</p>
-                        <div class="predict-opts">
-                            <button class="pred-btn" onclick="predictAnswer(this,true)">🌧️ Comenzará a llover</button>
-                            <button class="pred-btn" onclick="predictAnswer(this,false)">🌈 Saldrá el sol</button>
-                            <button class="pred-btn" onclick="predictAnswer(this,true)">⚡ Habrá tormenta</button>
-                            <button class="pred-btn" onclick="predictAnswer(this,false)">🌻 Nada va a pasar</button>
-                        </div>
+    // SCENE 4: SHADOWS
+    function ShadowsScene({ onNext }) {
+      const BG = "https://images.fillout.com/783226/gr81wn8thr/generated-images/466PDUyT95peTuVFu8NWQB/img_fOcDv5dwpxwEWXZA.jpg";
+      const connections = [
+        { idea: 'El Archivo pierde palabras', result: 'El conocimiento se olvida', icon: '📚' },
+        { idea: 'Los exploradores observan pistas', result: 'Pueden anticipar lo que vendrá', icon: '🔍' },
+        { idea: 'Descubrir ideas principales', result: 'Comprender el mensaje del texto', icon: '💡' },
+        { idea: 'Usar el contexto de las palabras', result: 'Descifrar significados desconocidos', icon: '🔗' },
+      ];
+
+      const [p, setP] = useState(0);
+      const [selected, setSelected] = useState(null);
+      const [matched, setMatched] = useState([]);
+      const [wrongPair, setWrongPair] = useState(false);
+      const sfx = useSoundEffects();
+
+      const handleIdeaClick = (i) => {
+        if (matched.includes(i)) return;
+        sfx('click');
+        setSelected(i);
+        setWrongPair(false);
+      };
+
+      const handleResultClick = (i) => {
+        if (selected === null || matched.includes(i)) return;
+        if (selected === i) {
+          sfx('reveal');
+          setMatched(prev => [...prev, i]);
+          setSelected(null);
+        } else {
+          sfx('shake');
+          setWrongPair(true);
+          setTimeout(() => { setWrongPair(false); setSelected(null); }, 800);
+        }
+      };
+
+      const allMatched = matched.length === connections.length;
+
+      return (
+        <motion.div className="relative w-full h-full overflow-hidden" animate={wrongPair ? { x: [0, -4, 4, -4, 0] } : {}}>
+          <motion.img src={BG} className="absolute inset-0 w-full h-full object-cover" alt=""
+            initial={{ opacity: 0 }} animate={{ opacity: p === 0 ? 0.5 : 0.3 }} transition={{ duration: 2 }} />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/70 to-black/40" />
+
+          <div className="relative z-40 h-full flex flex-col items-center justify-center px-6 md:px-12">
+            <AnimatePresence mode="wait">
+              {p === 0 && (
+                <motion.div key="sh0" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="text-center max-w-3xl space-y-6">
+                  <p className="text-primary/40 text-xs tracking-[0.4em] uppercase">Escena 4 · Las Sombras del Archivo</p>
+                  <h2 className="text-3xl md:text-5xl font-serif text-primary text-glow"><Typewriter text="Las conexiones se han roto..." speed={50} /></h2>
+                  <motion.p className="text-foreground/60 text-lg" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 3 }}>
+                    El Archivo recuperó las palabras... pero aún perdió las conexiones entre las ideas.
+                  </motion.p>
+                  <ContinueButton onClick={() => { sfx('whoosh'); setP(1); }} delay={5000} label="Reconstruir conexiones" />
+                </motion.div>
+              )}
+
+              {p === 1 && (
+                <motion.div key="sh1" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="max-w-4xl w-full space-y-6">
+                  <p className="text-primary/50 text-xs tracking-[0.3em] uppercase text-center">Une cada idea con su consecuencia</p>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-3">
+                      <p className="text-primary/60 text-xs uppercase tracking-wider text-center">Ideas</p>
+                      {connections.map((c, i) => (
+                        <motion.button key={`idea-${i}`} onClick={() => handleIdeaClick(i)}
+                          disabled={matched.includes(i)}
+                          className={`w-full p-4 rounded-xl border text-left transition-all duration-300 ${
+                            matched.includes(i) ? 'bg-primary/15 border-primary/40 opacity-60' :
+                            selected === i ? 'bg-primary/20 border-primary/50 glow-gold' :
+                            'bg-card/40 border-border/30 hover:border-primary/20'
+                          }`}>
+                          <span className="mr-2">{c.icon}</span>
+                          <span className="text-foreground/80 text-sm">{c.idea}</span>
+                        </motion.button>
+                      ))}
                     </div>
-                </div>
-                <div class="strat-visual">
-                    <div class="crystal-wrap">
-                        <div class="crystal-ball-el">🔮</div>
-                        <div class="crystal-glow"></div>
-                        <div class="formula-box">
-                            <div class="f-item">Pistas<br>del texto</div>
-                            <div class="f-plus">+</div>
-                            <div class="f-item">Lo que<br>ya sé</div>
-                            <div class="f-eq">=</div>
-                            <div class="f-result">🎯 Predicción</div>
-                        </div>
+                    <div className="space-y-3">
+                      <p className="text-primary/60 text-xs uppercase tracking-wider text-center">Consecuencias</p>
+                      {connections.map((c, i) => (
+                        <motion.button key={`res-${i}`} onClick={() => handleResultClick(i)}
+                          disabled={matched.includes(i)}
+                          className={`w-full p-4 rounded-xl border text-left transition-all duration-300 ${
+                            matched.includes(i) ? 'bg-primary/15 border-primary/40 opacity-60' :
+                            wrongPair && selected !== null ? 'border-destructive/50 bg-destructive/5' :
+                            'bg-card/40 border-border/30 hover:border-primary/20'
+                          }`}>
+                          <span className="text-foreground/80 text-sm">→ {c.result}</span>
+                        </motion.button>
+                      ))}
                     </div>
-                </div>
-            </div>
+                  </div>
+                  {allMatched ? (
+                    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="text-center space-y-3">
+                      <p className="text-foreground/70 italic">"Comprender no significa recordar frases. Significa construir relaciones entre ellas."</p>
+                      <ContinueButton onClick={() => { sfx('success'); onNext(); }} label="Siguiente escena" />
+                    </motion.div>
+                  ) : (
+                    <ContinueButton onClick={() => { sfx('whoosh'); onNext(); }} delay={15000} label="Saltar y continuar" />
+                  )}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        </motion.div>
+      );
+    }
+
+    // SCENE 5: CHAMBER
+    function ChamberScene({ onNext }) {
+      const BG = "https://images.fillout.com/783226/gr81wn8thr/generated-images/2G4h66CLTsbhRCVQAdTAoU/img_IkIwoyhfkLxcQGje.jpg";
+      const GUARDIAN = "https://images.fillout.com/783226/gr81wn8thr/generated-images/6vqeUVyNQDeaaU38uE8nRF/img_BafXbEzmY9gKEOuV.jpg";
+
+      const skills = [
+        { icon: '👁️', label: 'Observaron' },
+        { icon: '🧠', label: 'Recordaron' },
+        { icon: '🔮', label: 'Anticiparon' },
+        { icon: '💡', label: 'Descubrieron' },
+        { icon: '🔗', label: 'Relacionaron ideas' },
+        { icon: '📖', label: 'Interpretaron' },
+        { icon: '🤔', label: 'Reflexionaron' },
+        { icon: '✨', label: 'Construyeron conocimiento' },
+      ];
+
+      const [p, setP] = useState(0);
+      const sfx = useSoundEffects();
+
+      return (
+        <div className="relative w-full h-full overflow-hidden">
+          <motion.img src={BG} className="absolute inset-0 w-full h-full object-cover" alt=""
+            initial={{ opacity: 0 }} animate={{ opacity: 0.4 }} transition={{ duration: 2 }} />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/60 to-black/30" />
+
+          <div className="relative z-10 h-full flex flex-col items-center justify-center px-6 md:px-12">
+            <AnimatePresence mode="wait">
+              {p === 0 && (
+                <motion.div key="c0" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="text-center max-w-3xl space-y-6">
+                  <p className="text-primary/40 text-xs tracking-[0.4em] uppercase">Escena 5 · La Cámara Oculta</p>
+                  <h2 className="text-3xl md:text-5xl font-serif text-primary text-glow"><Typewriter text="La prueba más importante" speed={50} /></h2>
+                  <div className="p-4 bg-card/40 border border-destructive/30 rounded-xl backdrop-blur-sm">
+                    <p className="text-destructive/80 italic font-serif">"No todo mensaje debe aceptarse sin pensar."</p>
+                  </div>
+                  <ContinueButton onClick={() => { sfx('click'); setP(1); }} delay={5000} />
+                </motion.div>
+              )}
+
+              {p === 1 && (
+                <motion.div key="c1" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="text-center max-w-3xl space-y-6">
+                  <p className="text-primary/50 text-xs tracking-[0.3em] uppercase">Pensamiento Crítico</p>
+                  <h2 className="text-xl md:text-3xl font-serif text-foreground leading-relaxed">
+                    <Typewriter text="¿Están de acuerdo con el mensaje del texto? ¿Por qué? ¿Qué cambiarían?" speed={30} />
+                  </h2>
+                  <ContinueButton onClick={() => { sfx('descend'); setP(2); }} delay={7000} label="El Códice del Explorador" />
+                </motion.div>
+              )}
+
+              {p === 2 && (
+                <motion.div key="c2" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="text-center max-w-3xl space-y-6">
+                  <div className="text-5xl">📜</div>
+                  <p className="text-primary/40 text-xs tracking-[0.4em] uppercase">El Códice del Explorador</p>
+                  <div className="flex items-start gap-4 text-left">
+                    <img src={GUARDIAN} className="w-24 h-28 md:w-28 md:h-36 rounded-lg object-cover border border-primary/20" alt="" />
+                    <p className="text-foreground/80 text-lg md:text-xl leading-relaxed">
+                      <Typewriter text="El Archivo necesita una última prueba. Ahora deben demostrar que el conocimiento ya forma parte de ustedes. Expliquen con sus propias palabras de qué trató el texto." speed={28} />
+                    </p>
+                  </div>
+                  <ContinueButton onClick={() => { sfx('magic'); setP(3); }} delay={10000} />
+                </motion.div>
+              )}
+
+              {p === 3 && (
+                <motion.div key="c3" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="max-w-3xl w-full space-y-6 text-center">
+                  <p className="text-primary font-serif text-xl">Lo lograron.</p>
+                  <p className="text-foreground/60 text-sm mb-4">Recuperaron el Archivo porque...</p>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                    {skills.map((s, i) => (
+                      <motion.div key={i} className="p-3 bg-card/40 border border-primary/20 rounded-xl" whileHover={{ scale: 1.05 }}>
+                        <div className="text-2xl mb-1">{s.icon}</div>
+                        <p className="text-foreground/70 text-xs">{s.label}</p>
+                      </motion.div>
+                    ))}
+                  </div>
+                  <ContinueButton onClick={() => { sfx('success'); onNext(); }} delay={4000} label="Ver el final" />
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
         </div>
-    </div>
+      );
+    }
 
-    <!-- SLIDE 6: PREGUNTA 2 (sala) -->
-    <div class="slide" id="s6" data-bg="question2">
-        <div class="slide-inner center-all">
-            <div class="scene-badge">💬 REFLEXIÓN PARA LA SALA</div>
-            <div class="q-center">
-                <div class="q-deco">🔮</div>
-                <h2 class="q-title">La Profetisa del Libro Mágico</h2>
-                <div class="story-moment">
-                    <p>Luna entró a la sala de las predicciones. En la pared estaba escrito:</p>
-                    <blockquote>"El dragón vio el libro y sus ojos brillaron con un fuego diferente. No era el fuego de la ira, sino el del deseo…"</blockquote>
-                </div>
-                <h3 class="q-text">¿Qué crees que quiere el dragón hacer con el libro? ¿Por qué?</h3>
-                <div class="timer-zone">
-                    <p>💬 Comenten en grupo y compartan sus predicciones</p>
-                    <button class="timer-btn" onclick="startTimer(60)">⏱️ Dar 1 minuto para pensar</button>
-                </div>
-            </div>
+    // SCENE 6: FINAL
+    function FinalScene() {
+      const BG = "https://images.fillout.com/783226/gr81wn8thr/generated-images/whmoA5LkdEAFoYkezwiXpx/img_lbXwa06NE6_q8yfc.jpg";
+      const GUARDIAN = "https://images.fillout.com/783226/gr81wn8thr/generated-images/6vqeUVyNQDeaaU38uE8nRF/img_BafXbEzmY9gKEOuV.jpg";
+
+      const [p, setP] = useState(0);
+      const sfx = useSoundEffects();
+
+      useEffect(() => {
+        sfx('illuminate');
+        const t = setTimeout(() => sfx('success'), 1500);
+        return () => clearTimeout(t);
+      }, [sfx]);
+
+      return (
+        <div className="relative w-full h-full overflow-hidden">
+          <motion.img src={BG} className="absolute inset-0 w-full h-full object-cover" alt=""
+            initial={{ opacity: 0, scale: 1.15 }} animate={{ opacity: 0.6, scale: 1 }} transition={{ duration: 4 }} />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent" />
+
+          <div className="relative z-30 h-full flex flex-col items-center justify-center px-6 md:px-12">
+            <AnimatePresence mode="wait">
+              {p === 0 && (
+                <motion.div key="f0" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="text-center max-w-3xl space-y-6">
+                  <p className="text-primary/40 text-xs tracking-[0.4em] uppercase">Escena Final · La Reconstrucción del Archivo</p>
+                  <h2 className="text-3xl md:text-5xl font-serif text-primary text-glow">
+                    <Typewriter text="El Archivo ha sido restaurado" speed={60} />
+                  </h2>
+                  <p className="text-foreground/70 text-lg">
+                    Toda la biblioteca vuelve a iluminarse. Miles de libros flotan. Las palabras regresan.
+                  </p>
+                  <ContinueButton onClick={() => { sfx('magic'); setP(1); }} delay={4000} />
+                </motion.div>
+              )}
+
+              {p === 1 && (
+                <motion.div key="f1" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="max-w-4xl w-full space-y-8">
+                  <div className="flex flex-col md:flex-row items-center gap-6">
+                    <motion.div className="w-48 h-60 md:w-56 md:h-72 rounded-2xl overflow-hidden border-2 border-primary/40 glow-gold flex-shrink-0">
+                      <img src={GUARDIAN} className="w-full h-full object-cover" alt="" />
+                    </motion.div>
+                    <div className="text-left space-y-4 max-w-xl">
+                      <p className="text-primary font-serif text-xl md:text-2xl">Guardián del Archivo</p>
+                      <p className="text-foreground/85 text-lg md:text-xl leading-relaxed">
+                        <Typewriter text="Hoy no solo salvaron el Archivo. También descubrieron que leer no consiste únicamente en recorrer palabras. Leer significa comprender, interpretar, pensar y transformar el conocimiento." speed={28} />
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex justify-center">
+                    <ContinueButton onClick={() => { sfx('illuminate'); setP(2); }} delay={8000} />
+                  </div>
+                </motion.div>
+              )}
+
+              {p === 2 && (
+                <motion.div key="f2" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center max-w-3xl space-y-10">
+                  <div className="space-y-4">
+                    <p className="text-primary text-xs tracking-[0.4em] uppercase">✨ Mensaje Final ✨</p>
+                    <h2 className="text-2xl md:text-4xl font-serif text-primary text-glow leading-relaxed">
+                      <Typewriter text="El conocimiento no está escondido en las palabras... está en la capacidad de descubrir su significado." speed={40} />
+                    </h2>
+                  </div>
+                  <div className="pt-12 space-y-3 border-t border-primary/10">
+                    <p className="text-muted-foreground text-xs tracking-[0.3em] uppercase">Créditos</p>
+                    <p className="text-foreground/50 text-sm">Experiencia interactiva creada para transformar la comprensión lectora en una aventura cinematográfica</p>
+                    <p className="text-primary/40 text-xs mt-4">🎬 El Archivo Perdido</p>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
         </div>
-    </div>
+      );
+    }
 
-    <!-- SLIDE 7: ESTRATEGIA 3 – VISUALIZACIÓN -->
-    <div class="slide" id="s7" data-bg="strat3">
-        <div class="slide-inner">
-            <div class="scene-badge">ESTRATEGIA 3 de 8</div>
-            <div class="strat-layout">
-                <div class="strat-visual">
-                    <div class="eye-vis">
-                        <div class="big-eye-wrap">
-                            <div class="big-eye-pupil"></div>
-                            <div class="big-eye-shine"></div>
-                        </div>
-                        <div class="vis-floats">
-                            <span style="--vd:0s">🏰</span>
-                            <span style="--vd:.4s">🌊</span>
-                            <span style="--vd:.8s">🦋</span>
-                            <span style="--vd:1.2s">⛰️</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="strat-info">
-                    <h2 class="strat-title">👁️ Visualización</h2>
-                    <p class="strat-desc">Mientras lees, crea imágenes mentales. ¡Tu mente es el mejor cine del mundo!</p>
-                    <div class="steps-list">
-                        <div class="step-item"><span class="sn">1</span><p>Lee el texto con calma y atención</p></div>
-                        <div class="step-item"><span class="sn">2</span><p>Cierra los ojos e imagina la escena</p></div>
-                        <div class="step-item"><span class="sn">3</span><p>¿Qué colores, sonidos y olores hay?</p></div>
-                        <div class="step-item"><span class="sn">4</span><p>Dibuja o describe lo que visualizas</p></div>
-                    </div>
-                    <div class="practice-box">
-                        <h4>🎬 Practica ahora:</h4>
-                        <p><em>"La biblioteca mágica tenía paredes de cristal que reflejaban mil colores. Los libros flotaban en el aire, sus páginas susurrando secretos antiguos…"</em></p>
-                        <p class="vis-cta">👁️ Cierra los ojos 30 segundos y visualiza esta escena</p>
-                    </div>
-                </div>
+    // --- CONTENEDOR PRINCIPAL ---
+    function App() {
+      const TOTAL_SCENES = 6;
+      const [scene, setScene] = useState(0);
+      const [key, setKey] = useState(0);
+
+      const next = useCallback(() => setScene(s => Math.min(s + 1, TOTAL_SCENES - 1)), []);
+
+      const restart = () => {
+        setScene(0);
+        setKey(k => k + 1);
+      };
+
+      const renderScene = () => {
+        switch (scene) {
+          case 0: return <IntroScene onNext={next} />;
+          case 1: return <DoorScene onNext={next} />;
+          case 2: return <ManuscriptScene onNext={next} />;
+          case 3: return <ShadowsScene onNext={next} />;
+          case 4: return <ChamberScene onNext={next} />;
+          case 5: return <FinalScene />;
+          default: return null;
+        }
+      };
+
+      return (
+        <div className="fixed inset-0 bg-background overflow-hidden" key={key}>
+          <Particles />
+          <AnimatePresence mode="wait">
+            <motion.div key={scene} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 1.5 }} className="fixed inset-0 z-20">
+              {renderScene()}
+            </motion.div>
+          </AnimatePresence>
+
+          {/* Indicador superior */}
+          <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 flex items-center gap-4">
+            <div className="flex gap-1.5">
+              {Array.from({ length: TOTAL_SCENES }).map((_, i) => (
+                <div key={i} className={`h-2 rounded-full transition-all duration-500 ${i === scene ? 'bg-primary w-6' : i < scene ? 'bg-primary/40 w-2' : 'bg-muted-foreground/20 w-2'}`} />
+              ))}
             </div>
+            {scene > 0 && (
+              <motion.button
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                onClick={restart}
+                className="w-8 h-8 rounded-full bg-card/60 backdrop-blur-sm border border-border/40 flex items-center justify-center text-muted-foreground hover:text-primary hover:border-primary/40 transition-colors"
+                title="Reiniciar experiencia"
+              >
+                <IconRotateCcw className="w-3.5 h-3.5" />
+              </motion.button>
+            )}
+          </div>
+
+          <AudioControls />
+          <AIButton />
         </div>
-    </div>
+      );
+    }
 
-    <!-- SLIDE 8: ESTRATEGIA 4 – CONEXIONES -->
-    <div class="slide" id="s8" data-bg="strat4">
-        <div class="slide-inner">
-            <div class="scene-badge">ESTRATEGIA 4 de 8</div>
-            <div class="strat-layout reverse">
-                <div class="strat-info">
-                    <h2 class="strat-title">🔗 Hacer Conexiones</h2>
-                    <p class="strat-desc">Los buenos lectores conectan el texto con su vida, otros textos y el mundo real.</p>
-                    <div class="conn-map">
-                        <div class="conn-center">📖 Texto</div>
-                        <div class="conn-branch"><span>🧑‍🤝‍🧑</span><div><strong>Texto → Yo</strong><p>¿Esto me ha pasado a mí?</p></div></div>
-                        <div class="conn-branch"><span>📚</span><div><strong>Texto → Texto</strong><p>¿Se parece a otro libro?</p></div></div>
-                        <div class="conn-branch"><span>🌍</span><div><strong>Texto → Mundo</strong><p>¿Pasa en la realidad?</p></div></div>
-                    </div>
-                </div>
-                <div class="strat-visual">
-                    <div class="web-vis">
-                        <div class="web-center-node">📖</div>
-                        <div class="web-nodes">
-                            <span class="wnode" style="--wi:0">YO</span>
-                            <span class="wnode" style="--wi:1">TEXTOS</span>
-                            <span class="wnode" style="--wi:2">MUNDO</span>
-                        </div>
-                        <svg class="web-lines" viewBox="0 0 200 200">
-                            <line x1="100" y1="100" x2="100" y2="20" stroke="rgba(245,158,11,.4)" stroke-width="2" stroke-dasharray="5"/>
-                            <line x1="100" y1="100" x2="25" y2="165" stroke="rgba(245,158,11,.4)" stroke-width="2" stroke-dasharray="5"/>
-                            <line x1="100" y1="100" x2="175" y2="165" stroke="rgba(245,158,11,.4)" stroke-width="2" stroke-dasharray="5"/>
-                        </svg>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- SLIDE 9: ACTIVIDAD CONEXIONES (sala) -->
-    <div class="slide" id="s9" data-bg="activity">
-        <div class="slide-inner center-all">
-            <div class="scene-badge">🎮 ACTIVIDAD INTERACTIVA</div>
-            <div class="q-center">
-                <div class="q-deco">🔗</div>
-                <h2 class="q-title">¡Hagamos Conexiones!</h2>
-                <div class="act-layout">
-                    <div class="text-frag">
-                        <h4>Lee este fragmento:</h4>
-                        <blockquote>"Luna cruzó el puente de cristal con miedo. Abajo, el abismo parecía no tener fondo. Pero recordó las palabras de su abuela: 'El valor no es no tener miedo, es seguir adelante a pesar del miedo'."</blockquote>
-                    </div>
-                    <div class="conn-activity">
-                        <div class="ca-item" onclick="selectConn(this)"><span>🧑</span><p>¿Te ha pasado algo parecido?</p></div>
-                        <div class="ca-item" onclick="selectConn(this)"><span>📚</span><p>¿Conoces otro personaje valiente?</p></div>
-                        <div class="ca-item" onclick="selectConn(this)"><span>🌍</span><p>¿Existe algo así en el mundo real?</p></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- SLIDE 10: ESTRATEGIA 5 – PREGUNTAS -->
-    <div class="slide" id="s10" data-bg="strat5">
-        <div class="slide-inner">
-            <div class="scene-badge">ESTRATEGIA 5 de 8</div>
-            <div class="strat-layout">
-                <div class="strat-visual">
-                    <div class="tower-vis">
-                        <div class="tower-lv" style="--ti:5;--tw:220px">¿Cuándo? / ¿Dónde?</div>
-                        <div class="tower-lv" style="--ti:4;--tw:190px">¿Cómo?</div>
-                        <div class="tower-lv" style="--ti:3;--tw:160px">¿Por qué?</div>
-                        <div class="tower-lv" style="--ti:2;--tw:130px">¿Quién?</div>
-                        <div class="tower-top">❓ ¿Qué?</div>
-                    </div>
-                </div>
-                <div class="strat-info">
-                    <h2 class="strat-title">❓ Hacer Preguntas</h2>
-                    <p class="strat-desc">Los lectores activos se hacen preguntas antes, durante y después de leer.</p>
-                    <div class="q-categories">
-                        <div class="qcat before"><h4>⬅️ Antes</h4><ul><li>¿De qué trata?</li><li>¿Qué sé del tema?</li></ul></div>
-                        <div class="qcat during"><h4>📖 Durante</h4><ul><li>¿Qué significa esto?</li><li>¿Qué pasará después?</li></ul></div>
-                        <div class="qcat after"><h4>➡️ Después</h4><ul><li>¿Qué aprendí?</li><li>¿Qué dudas tengo?</li></ul></div>
-                    </div>
-                    <div class="luna-tip-box">
-                        <span class="ltip-char">👧</span>
-                        <p>"En la Torre de las Preguntas, Luna encontró cientos de puertas. Cada pregunta que hacía abría una nueva…"</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- SLIDE 11: ESTRATEGIA 6 – INFERENCIAS -->
-    <div class="slide" id="s11" data-bg="strat6">
-        <div class="slide-inner">
-            <div class="scene-badge">ESTRATEGIA 6 de 8</div>
-            <div class="strat-layout detective-scene">
-                <div class="detective-char-wrap">
-                    <span class="det-icon">🕵️</span>
-                    <span class="det-magnifier">🔍</span>
-                </div>
-                <div class="strat-info">
-                    <h2 class="strat-title">🕵️ Hacer Inferencias</h2>
-                    <p class="strat-desc">Como un detective, lee entre líneas. ¡El autor no dice todo directamente!</p>
-                    <div class="infer-example">
-                        <div class="ie-text">
-                            <h4>El texto dice:</h4>
-                            <blockquote>"Marina entró a la cocina. Olía a quemado. Su madre tenía las manos manchadas de negro y miraba fijamente el horno."</blockquote>
-                        </div>
-                        <div class="ie-arrow">🔍→</div>
-                        <div class="ie-result">
-                            <h4>Inferencia:</h4>
-                            <p>Aunque el texto no lo dice, deducimos que <strong>la madre quemó la comida</strong></p>
-                        </div>
-                    </div>
-                    <div class="infer-formula">
-                        <span>Pistas del texto</span><span class="if-plus">+</span><span>Conocimiento previo</span><span class="if-eq">=</span><span class="if-res">Inferencia ✓</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- SLIDE 12: ESTRATEGIA 7 – IDEA PRINCIPAL -->
-    <div class="slide" id="s12" data-bg="strat7">
-        <div class="slide-inner">
-            <div class="scene-badge">ESTRATEGIA 7 de 8</div>
-            <div class="strat-layout reverse">
-                <div class="strat-info">
-                    <h2 class="strat-title">🏔️ Idea Principal</h2>
-                    <p class="strat-desc">En cada texto hay una idea más importante que todo lo demás. ¡Encuéntrala!</p>
-                    <div class="mountain-diag">
-                        <div class="mt-peak">🏔️ Idea Principal</div>
-                        <div class="mt-base">
-                            <span>💬 Detalle 1</span>
-                            <span>💬 Detalle 2</span>
-                            <span>💬 Detalle 3</span>
-                            <span>💬 Ejemplo</span>
-                        </div>
-                    </div>
-                    <div class="tips-row">
-                        <div class="tip-pill">🔎 Busca la oración que resume todo</div>
-                        <div class="tip-pill">🗑️ Elimina los detalles y ejemplos</div>
-                        <div class="tip-pill">❓ ¿De qué trata básicamente?</div>
-                    </div>
-                </div>
-                <div class="strat-visual">
-                    <div class="umbrella-vis">
-                        <div class="uv-top">☂️</div>
-                        <div class="uv-label">CONCEPTO CENTRAL</div>
-                        <div class="uv-drops">
-                            <span>ejemplo</span><span>detalle</span><span>ejemplo</span><span>dato</span><span>ejemplo</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- SLIDE 13: ESTRATEGIA 8 – RESUMEN -->
-    <div class="slide" id="s13" data-bg="strat8">
-        <div class="slide-inner">
-            <div class="scene-badge">ESTRATEGIA 8 de 8</div>
-            <div class="strat-layout">
-                <div class="strat-visual">
-                    <div class="funnel-vis">
-                        <div class="fv-top">
-                            <span>palabras</span><span>ideas</span><span>datos</span>
-                            <span>ejemplos</span><span>párrafos</span><span>oraciones</span>
-                        </div>
-                        <div class="fv-arrow">⬇️</div>
-                        <div class="fv-bottom">✅ Resumen</div>
-                    </div>
-                </div>
-                <div class="strat-info">
-                    <h2 class="strat-title">📝 Resumir</h2>
-                    <p class="strat-desc">Un buen resumen captura las ideas esenciales en pocas palabras.</p>
-                    <div class="rules-list">
-                        <div class="rule-item ok">✅ Incluye solo lo esencial</div>
-                        <div class="rule-item no">❌ Elimina ejemplos y repeticiones</div>
-                        <div class="rule-item ok">✅ Usa tus propias palabras</div>
-                        <div class="rule-item ok">✅ Mantén el orden lógico</div>
-                        <div class="rule-item ok">✅ Breve pero completo</div>
-                    </div>
-                    <div class="luna-tip-box gold">
-                        <span class="ltip-char">👧</span>
-                        <p>¡Luna usó todas estas estrategias juntas para entender el libro mágico y encontrar el camino a casa!</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- SLIDE 14: DESAFÍO FINAL (sala) -->
-    <div class="slide" id="s14" data-bg="final">
-        <div class="slide-inner center-all">
-            <div class="scene-badge">🏆 GRAN DESAFÍO FINAL</div>
-            <div class="q-center">
-                <div class="q-deco">🏆</div>
-                <h2 class="q-title">¡El Tesoro del Lector Sabio!</h2>
-                <div class="story-moment">
-                    <blockquote>"Luna llegó a la sala del tesoro. Frente a ella, un tomo antiguo decía: 'Para abrirme, debes demostrar que eres un verdadero Lector Sabio.' Luna sonrió. Sabía exactamente qué hacer."</blockquote>
-                </div>
-                <h3 class="q-text">¿Cuáles estrategias usaría Luna para comprender el libro del tesoro?</h3>
-                <div class="checklist-grid">
-                    <label><input type="checkbox"> 🧠 Conocimientos previos</label>
-                    <label><input type="checkbox"> 🔮 Predicciones</label>
-                    <label><input type="checkbox"> 👁️ Visualización</label>
-                    <label><input type="checkbox"> 🔗 Conexiones</label>
-                    <label><input type="checkbox"> ❓ Hacer preguntas</label>
-                    <label><input type="checkbox"> 🕵️ Inferencias</label>
-                    <label><input type="checkbox"> 🏔️ Idea principal</label>
-                    <label><input type="checkbox"> 📝 Resumir</label>
-                </div>
-                <button class="check-all-btn" onclick="checkAll()">✨ ¡Todas! Los lectores sabios usan todas las estrategias</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- SLIDE 15: CIERRE -->
-    <div class="slide" id="s15" data-bg="closing">
-        <div class="slide-inner center-all">
-            <div class="fireworks-wrap">
-                <span class="fw-item" style="--fx:10%;--fy:20%;--fd:0s">🎆</span>
-                <span class="fw-item" style="--fx:80%;--fy:15%;--fd:.3s">🎇</span>
-                <span class="fw-item" style="--fx:50%;--fy:35%;--fd:.6s">✨</span>
-                <span class="fw-item" style="--fx:20%;--fy:65%;--fd:.9s">🎉</span>
-                <span class="fw-item" style="--fx:75%;--fy:60%;--fd:1.2s">🌟</span>
-                <span class="fw-item" style="--fx:40%;--fy:10%;--fd:1.5s">🎊</span>
-            </div>
-            <div class="closing-char">
-                <div class="luna luna-lg celebrate">
-                    <div class="luna-hair"></div>
-                    <div class="luna-face">
-                        <div class="luna-eyes happy"><div class="l-eye h"></div><div class="r-eye h"></div></div>
-                        <div class="luna-big-smile"></div>
-                    </div>
-                    <div class="luna-body">
-                        <div class="luna-arm left raised"></div>
-                        <div class="luna-arm right raised"></div>
-                        <span class="luna-book-icon">📖</span>
-                    </div>
-                    <div class="luna-legs jumping"></div>
-                </div>
-            </div>
-            <div class="closing-text">
-                <h1>¡Luna lo logró! 🎊</h1>
-                <h2>¡Y tú también puedes!</h2>
-                <div class="strat-pills">
-                    <span>🧠 Conocimientos</span>
-                    <span>🔮 Predicciones</span>
-                    <span>👁️ Visualización</span>
-                    <span>🔗 Conexiones</span>
-                    <span>❓ Preguntas</span>
-                    <span>🕵️ Inferencias</span>
-                    <span>🏔️ Idea Principal</span>
-                    <span>📝 Resumen</span>
-                </div>
-                <p class="closing-quote">"La comprensión lectora no es un destino, es un viaje que nunca termina"</p>
-            </div>
-        </div>
-    </div>
-
-</div><!-- /slides-wrap -->
-
-<!-- NAVEGACIÓN -->
-<div id="navigation">
-    <button id="prev-btn" onclick="prevSlide()"><i class="fas fa-chevron-left"></i> Anterior</button>
-    <div id="nav-center">
-        <div id="dots-row"></div>
-        <span id="slide-count">1 / 15</span>
-    </div>
-    <button id="next-btn" onclick="nextSlide()">Siguiente <i class="fas fa-chevron-right"></i></button>
-</div>
-
-<!-- TIMER MODAL -->
-<div id="timer-modal" class="hidden">
-    <div class="timer-box">
-        <div id="timer-num">60</div>
-        <p>segundos para pensar…</p>
-        <button onclick="closeTimer()">✓ ¡Listo!</button>
-    </div>
-</div>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
-<script src="script.js"></script>
+    // Renderizar aplicación
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
 </body>
 </html>
