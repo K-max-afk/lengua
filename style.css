@@ -1,0 +1,38 @@
+body {
+  background-color: #080a10;
+  color: #f2ebd9;
+  font-family: 'Inter', sans-serif;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  height: 100vh;
+  width: 100vw;
+}
+
+.font-serif {
+  font-family: 'Cinzel', Georgia, serif;
+}
+
+.glow-gold {
+  box-shadow: 0 0 20px rgba(212, 160, 23, 0.4), 0 0 60px rgba(212, 160, 23, 0.15);
+}
+
+.text-glow {
+  text-shadow: 0 0 20px rgba(212, 160, 23, 0.5), 0 0 40px rgba(212, 160, 23, 0.2);
+}
+
+/* Transición suave de entrada */
+.fade-in {
+  animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
